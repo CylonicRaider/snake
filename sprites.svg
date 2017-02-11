@@ -43,7 +43,11 @@
             <path d="M -5,-16 V -12 C -5,-4 -2,8 0,8 C 2,8 5,-4 5,-12 V -16"/>
         </g>
     </g>
-    <g id="mouse" transform="translate(48,16)">
+    <g id="egg" transform="translate(48,16)">
+        <path d="M -7,3 A 7,14 0 0,1 7,3 A 7,8 0 0,1 -7,3 Z" fill="#f0f0e0"
+              stroke="#c0c0c0" stroke-width="2"/>
+    </g>
+    <g id="mouse" transform="translate(80,16)">
         <path d="M -6,3 Q -8.5,-3 -5,-3 Q -1.5,-3 -4,3" fill="#ffc0e0"
             stroke="#c0c0c0" stroke-width="2"/>
         <path d="M 11,7 A 2,2 0 0,1 11,13 L 7,13" fill="none" stroke="#ffc0e0"
@@ -52,18 +56,14 @@
             stroke="#c0c0c0" stroke-width="2" stroke-linejoin="round"/>
         <circle cx="-5" cy="3" r="1" fill="black"/>
     </g>
-    <g id="egg" transform="translate(48,48)">
-        <path d="M -7,3 A 7,14 0 0,1 7,3 A 7,8 0 0,1 -7,3 Z" fill="#f0f0e0"
-              stroke="#c0c0c0" stroke-width="2"/>
-    </g>
-    <g id="gem" transform="translate(48,80)">
+    <g id="gem" transform="translate(80,48)">
         <path d="M 0,9 L 9,0 L 4,-5 L -4,-5 L -9,0 Z" fill="#80c0ff"
               stroke="#0080ff" stroke-width="2"/>
     </g>
-    <g id="potion-green" transform="translate(48,112)">
+    <g id="potion-green" transform="translate(80,80)">
         <use xlink:href="#potion-template" x="0" y="0" fill="#008000"/>
     </g>
-    <g id="potion-red" transform="translate(80,16)">
+    <g id="potion-red" transform="translate(80,112)">
         <use xlink:href="#potion-template" x="0" y="0" fill="#800000"/>
     </g>
 </svg>
