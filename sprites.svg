@@ -47,6 +47,10 @@
         <path d="M -7,3 A 7,14 0 0,1 7,3 A 7,8 0 0,1 -7,3 Z" fill="#f0f0e0"
               stroke="#c0c0c0" stroke-width="2"/>
     </g>
+    <g id="obstacle" transform="translate(48,48)">
+        <rect x="-11" y="-11" width="22" height="22" fill="#808080"
+              stroke="#404040" stroke-width="2"/>
+    </g>
     <g id="mouse" transform="translate(80,16)">
         <path d="M -6,3 Q -8.5,-3 -5,-3 Q -1.5,-3 -4,3" fill="#ffc0e0"
             stroke="#c0c0c0" stroke-width="2"/>
