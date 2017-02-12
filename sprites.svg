@@ -18,6 +18,17 @@
                   Q 7,0 3,-2.5 V -7 H 6" fill="none" stroke="#40c0c0"
                   stroke-width="2"/>
         </g>
+        <clipPath id="leck-clip">
+            <rect x="-16" y="-16" width="32" height="32"/>
+        </clipPath>
+        <filter id="leck-filter">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="2"
+                            result="blurred"/>
+            <feComposite in="blurred" in2="blurred" operator="arithmetic"
+                         k1="-1" k2="2" result="amplified"/>
+            <feComposite in="SourceGraphic" in2="amplified" operator="arithmetic"
+                         k1="-1" k3="1"/>
+        </filter>
     </defs>
     <g id="snake" fill="#80ff80" stroke="#008000" stroke-width="2">
         <g id="head" transform="translate(16,16)">
@@ -50,6 +61,13 @@
     <g id="obstacle" transform="translate(48,48)">
         <rect x="-11" y="-11" width="22" height="22" fill="#808080"
               stroke="#404040" stroke-width="2"/>
+    </g>
+    <g id="leck" transform="translate(48,112)">
+        <g clip-path="url(#leck-clip)" filter="url(#leck-filter)">
+            <rect x="-16" y="-16" width="32" height="32" opacity="0"/>
+            <path d="M -8,8 V -4 H -6 V -6 A 6,6 0 0,1 6,-6 V -4 H 8 V 8 Z
+                  M -4,-4 H 4 V -6 A 4,4 0 0,0 -4,-6 Z"/>
+        </g>
     </g>
     <g id="mouse" transform="translate(80,16)">
         <path d="M -6,3 Q -8.5,-3 -5,-3 Q -1.5,-3 -4,3" fill="#ffc0e0"
