@@ -3,7 +3,7 @@
      xmlns:xlink="http://www.w3.org/1999/xlink">
     <title>Snake game spritesheet</title>
     <defs>
-        <clipPath id="eye-clip">
+        <clipPath id="snake-eye-clip">
             <path d="M 0,6 H -8 A 4,4 0 0,1 0,6 M 0,6 H 8 A 4,4 0 0,0 0,6"/>
         </clipPath>
         <clipPath id="potion-clip">
@@ -34,7 +34,7 @@
         <g id="head" transform="translate(16,16)">
             <path d="M -5,16 V 11 C -5,7 -11,11 -11,5 C -11,0 -2,-9 0,-9
                 C 2,-9 11,0 11,5 C 11,11 5,7 5,11 V 16"/>
-            <g clip-path="url(#eye-clip)" stroke="none">
+            <g clip-path="url(#snake-eye-clip)" stroke="none">
                 <rect x="-8" y="2" width="16" height="4" fill="white"/>
                 <circle cx="-4" cy="2" r="2" fill="black"/>
                 <circle cx="4" cy="2" r="2" fill="black"/>
