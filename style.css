@@ -1,0 +1,62 @@
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: serif;
+  font-size: 5vh;
+}
+
+.pane {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  opacity: 0;
+  text-align: center;
+}
+.pane:not(.visible) {
+  display: none;
+}
+
+.visible {
+  opacity: 1;
+  animation: fade-in 0.2s;
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.backdrop {
+  padding: 0.25em;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  margin: 0.25em 0;
+  padding: 0 0.25em;
+}
+
+h1 {
+  font-variant: small-caps;
+  font-size: 2em;
+  letter-spacing: 0.05em;
+}
+h1 + p {
+  font-style: italic;
+}
+
+h2 {
+  font-variant: small-caps;
+  font-size: 1.5em;
+}
