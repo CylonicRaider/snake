@@ -38,16 +38,16 @@ function init() {
     showNode("gamescreen");
   }
   $listen("start", "click", function() {
-    var img = $id("spritesheet");
-    if (img.complete) {
-      testSprites(img);
-    } else {
-      $listen(img, "load", function() {
-        testSprites(img);
-      });
-    }
+    testSprites($id("spritesheet"));
   });
   showNode("titlescreen");
 }
 
-window.addEventListener("load", init);
+$listen(window, "load", function() {
+  var img = $id("spritesheet");
+  if (img.complete) {
+    init();
+  } else {
+    $listen(img, "load", init);
+  }
+});
