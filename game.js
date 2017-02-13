@@ -1,13 +1,17 @@
 
 /* Encapsulating a section of a texture atlas along with pre-rendering
  * image    : The texture atlas.
- * selection: An {x, y, w, h} object denoting the section of the texture
- *            atlas to use. Must be present.
+ * selection: An {x, y, w, h, dw, dh} object denoting the section of the
+ *            texture atlas to use. The dw and dh properties (defaulting to
+ *            w and h) store the display size of the sprite (which may
+ *            differ from the size on the spritesheet). Must be present.
  * transform: Currently, null (for none) or one of the following keywords:
  *            rotCW : Rotate clockwise by ninety degrees.
  *            rotCCW: Rotate counterclockwise by ninety degrees.
  *            turn  : Rotate by 180 degrees. */
 function Sprite(image, selection, transform) {
+  if (selection.dw == null) selection.dw = selection.w;
+  if (selection.dh == null) selection.dh = selection.h;
   this.image = image;
   this.selection = selection;
   this.transform = transform;
@@ -20,7 +24,7 @@ Sprite.prototype = {
   render: function(drain, x, y) {
     if (this._atlas) {
       var im = this._atlas, sel = this._atlasSelection;
-      drain.drawImage(im, sel.x, sel.y, sel.w, sel.h, x, y);
+      drain.drawImage(im, sel.x, sel.y, sel.w, sel.h, x, y, sel.dw, sel.dh);
     } else {
       var im = this.image, sel = this.selection, tr = this.transform;
       drain.save();
@@ -29,7 +33,7 @@ Sprite.prototype = {
         case "rotCCW": drain.transform(0, -1, 1, 0, 0, sel.h); break;
         case "turn": drain.transform(-1, 0, 0, -1, sel.w, sel.h); break;
       }
-      drain.drawImage(im, sel.x, sel.y, sel.w, sel.h, x, y);
+      drain.drawImage(im, sel.x, sel.y, sel.w, sel.h, x, y, sel.dw, sel.dh);
       drain.restore();
     }
   },
@@ -44,7 +48,7 @@ Sprite.prototype = {
       this.render(atlas, x, y);
       this._atlas = atlas;
       this._atlasSelection = {x: x, y: y, w: this.selection.w,
-        h: this.selection.h};
+        h: this.selection.h, dw: this.selection.w, dh: this.selection.h};
     }
   }
 };
