@@ -28,12 +28,13 @@ Sprite.prototype = {
     } else {
       var im = this.image, sel = this.selection, tr = this.transform;
       drain.save();
+      drain.translate(x, y);
       switch (tr) {
-        case "rotCW": drain.transform(0, 1, -1, 0, sel.w, 0); break;
-        case "rotCCW": drain.transform(0, -1, 1, 0, 0, sel.h); break;
-        case "turn": drain.transform(-1, 0, 0, -1, sel.w, sel.h); break;
+        case "rotCW": drain.transform(0, 1, -1, 0, sel.dw, 0); break;
+        case "rotCCW": drain.transform(0, -1, 1, 0, 0, sel.dh); break;
+        case "turn": drain.transform(-1, 0, 0, -1, sel.dw, sel.dh); break;
       }
-      drain.drawImage(im, sel.x, sel.y, sel.w, sel.h, x, y, sel.dw, sel.dh);
+      drain.drawImage(im, sel.x, sel.y, sel.w, sel.h, 0, 0, sel.dw, sel.dh);
       drain.restore();
     }
   },
@@ -41,14 +42,14 @@ Sprite.prototype = {
   /* Pre-render the sprite into the given atlas
    * If atlas is null, the current prerendering is cleared (as it is in
    * any case), and no new one is created. */
-  preRender: function(atlas, x, y) {
+  preRender: function(atlas, ctx, x, y) {
     this._atlas = null;
     this._atlasSelection = null;
     if (atlas != null) {
-      this.render(atlas, x, y);
+      this.render(ctx, x, y);
       this._atlas = atlas;
-      this._atlasSelection = {x: x, y: y, w: this.selection.w,
-        h: this.selection.h, dw: this.selection.w, dh: this.selection.h};
+      this._atlasSelection = {x: x, y: y, w: this.selection.dw,
+        h: this.selection.dh, dw: this.selection.dw, dh: this.selection.dh};
     }
   }
 };
@@ -60,6 +61,8 @@ Sprite.prototype = {
  *        additional property, if any. The "bg" property can be either a
  *        color (starting with a '#' sign) or a sprite name, which is
  *        used as the background for the sprite (for precompositing).
+ *        A "base" property names a description to clone absent properties
+ *        from (should not be nested).
  * Attributes:
  * sprites: Actual sprite storage. Computed by the compose() method.
  */
@@ -72,14 +75,24 @@ function SpriteSheet(image, descs) {
 
 SpriteSheet.prototype = {
   /* Compose the spritesheet */
-  compose: function() {
+  compose: function(width) {
     /* Arbitrarily choosing the spritesheet's width.
      * Box packing problems are already hard without that. */
-    var width = this.image.width;
+    var width = width || this.image.width;
     var x = 0, y = 0, l = 0, lh = 0;
     for (var name in this.descs) {
       if (! this.descs.hasOwnProperty(name)) continue;
       var desc = this.descs[name];
+      if (desc.base) {
+        var base = this.descs[desc.base];
+        if (desc.x == null) desc.x = base.x;
+        if (desc.y == null) desc.y = base.y;
+        if (desc.w == null) desc.w = base.w;
+        if (desc.h == null) desc.h = base.h;
+        if (desc.dw == null) desc.dw = base.dw;
+        if (desc.dh == null) desc.dh = base.dh;
+        if (desc.bg == null) desc.bg = base.bg;
+      }
       if (desc.dw == null) desc.dw = desc.w;
       if (desc.dh == null) desc.dh = desc.h;
       /* Check if it fits */
@@ -98,31 +111,32 @@ SpriteSheet.prototype = {
     this._atlas = document.createElement('canvas');
     this._atlas.width = width;
     this._atlas.height = height;
+    var ctx = this._atlas.getContext('2d');
     this.sprites = {};
     for (var name in this.descs) {
       if (! this.descs.hasOwnProperty(name)) continue;
-      this._preRender(name);
+      this._preRender(name, ctx);
     }
   },
 
   /* Pre-render the sprite description as given by name */
-  _preRender: function(name) {
-    if (! this._sprites[name]) {
+  _preRender: function(name, ctx) {
+    if (! this.sprites[name]) {
       /* Draw background */
       var desc = this.descs[name];
       if (/^#/.test(desc.bg)) {
-        this._atlas.fillStyle = desc.bg;
-        this._atlas.fillRect(desc._ax, desc._ay, desc.dw, desc.dh);
+        ctx.fillStyle = desc.bg;
+        ctx.fillRect(desc._ax, desc._ay, desc.dw, desc.dh);
       } else if (desc.bg) {
-        this._sprites[name].render(this._atlas, desc._ax, desc._ay);
+        this._preRender(desc.bg, ctx).render(ctx, desc._ax, desc._ay);
       }
       /* Create sprite */
       var sprite = new Sprite(this.image, {x: desc.x, y: desc.y,
         w: desc.w, h: desc.h, dw: desc.dw, dh: desc.dh},
         desc.transform || null);
-      sprite.preRender(this._atlas, desc._ax, desc._ay);
-      this._sprites[name] = sprite;
+      sprite.preRender(this._atlas, ctx, desc._ax, desc._ay);
+      this.sprites[name] = sprite;
     }
-    return this._sprites[name];
+    return this.sprites[name];
   }
 };
