@@ -52,3 +52,77 @@ Sprite.prototype = {
     }
   }
 };
+
+/* Wrapper around a collection of prerendered Sprite-s
+ * image: The spritesheet common to the sprites
+ * descs: Object mapping sprite names to objects sharing the format with
+ *        Sprite.selection, with the "transform" attribute stored as an
+ *        additional property, if any. The "bg" property can be either a
+ *        color (starting with a '#' sign) or a sprite name, which is
+ *        used as the background for the sprite (for precompositing).
+ * Attributes:
+ * sprites: Actual sprite storage. Computed by the compose() method.
+ */
+function SpriteSheet(image, descs) {
+  this.image = image;
+  this.descs = descs;
+  this._atlas = null;
+  this.sprites = null;
+}
+
+SpriteSheet.prototype = {
+  /* Compose the spritesheet */
+  compose: function() {
+    /* Arbitrarily choosing the spritesheet's width.
+     * Box packing problems are already hard without that. */
+    var width = this.image.width;
+    var x = 0, y = 0, l = 0, lh = 0;
+    for (var name in this.descs) {
+      if (! this.descs.hasOwnProperty(name)) continue;
+      var desc = this.descs[name];
+      if (desc.dw == null) desc.dw = desc.w;
+      if (desc.dh == null) desc.dh = desc.h;
+      /* Check if it fits */
+      if (x + desc.dw > width) {
+        x = 0;
+        y += lh;
+        l++;
+        lh = 0;
+      }
+      desc._ax = x;
+      desc._ay = y;
+      x += desc.dw;
+      if (lh < desc.dh) lh = desc.dh;
+    }
+    var height = y + lh;
+    this._atlas = document.createElement('canvas');
+    this._atlas.width = width;
+    this._atlas.height = height;
+    this.sprites = {};
+    for (var name in this.descs) {
+      if (! this.descs.hasOwnProperty(name)) continue;
+      this._preRender(name);
+    }
+  },
+
+  /* Pre-render the sprite description as given by name */
+  _preRender: function(name) {
+    if (! this._sprites[name]) {
+      /* Draw background */
+      var desc = this.descs[name];
+      if (/^#/.test(desc.bg)) {
+        this._atlas.fillStyle = desc.bg;
+        this._atlas.fillRect(desc._ax, desc._ay, desc.dw, desc.dh);
+      } else if (desc.bg) {
+        this._sprites[name].render(this._atlas, desc._ax, desc._ay);
+      }
+      /* Create sprite */
+      var sprite = new Sprite(this.image, {x: desc.x, y: desc.y,
+        w: desc.w, h: desc.h, dw: desc.dw, dh: desc.dh},
+        desc.transform || null);
+      sprite.preRender(this._atlas, desc._ax, desc._ay);
+      this._sprites[name] = sprite;
+    }
+    return this._sprites[name];
+  }
+};
