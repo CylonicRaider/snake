@@ -1,15 +1,20 @@
 
 /* Encapsulating a section of a texture atlas along with pre-rendering
  * image    : The texture atlas.
- * selection: An {x, y, w, h, dw, dh} object denoting the section of the
- *            texture atlas to use. The dw and dh properties (defaulting to
- *            w and h) store the display size of the sprite (which may
- *            differ from the size on the spritesheet). Must be present.
+ * selection: An {x, y, w, h, dx, dy, dw, dh} object denoting the section of
+ *            the texture atlas to use and how to display it. x, y, w, and h
+ *            select a rectangular part of the source image; dx and dy store
+ *            a displacement to apply when rendering, and dw and dh contain
+ *            a size to scale the image to. Whilst x, y, w, and h must be
+ *            present, dx and dy default to zero and dw and dh to w and h,
+ *            respectively.
  * transform: Currently, null (for none) or one of the following keywords:
  *            rotCW : Rotate clockwise by ninety degrees.
  *            rotCCW: Rotate counterclockwise by ninety degrees.
  *            turn  : Rotate by 180 degrees. */
 function Sprite(image, selection, transform) {
+  if (selection.dx == null) selection.dx = 0;
+  if (selection.dy == null) selection.dy = 0;
   if (selection.dw == null) selection.dw = selection.w;
   if (selection.dh == null) selection.dh = selection.h;
   this.image = image;
@@ -28,7 +33,7 @@ Sprite.prototype = {
     } else {
       var im = this.image, sel = this.selection, tr = this.transform;
       drain.save();
-      drain.translate(x, y);
+      drain.translate(x + sel.dx, y + sel.dy);
       switch (tr) {
         case "rotCW": drain.transform(0, 1, -1, 0, sel.dw, 0); break;
         case "rotCCW": drain.transform(0, -1, 1, 0, 0, sel.dh); break;
@@ -48,8 +53,9 @@ Sprite.prototype = {
     if (atlas != null) {
       this.render(ctx, x, y);
       this._atlas = atlas;
-      this._atlasSelection = {x: x, y: y, w: this.selection.dw,
-        h: this.selection.dh, dw: this.selection.dw, dh: this.selection.dh};
+      var sel = this.selection;
+      this._atlasSelection = {x: x, y: y, w: sel.dw, h: sel.dh,
+        dx: 0, dy: 0, dw: sel.dw, dh: sel.dh};
     }
   }
 };
@@ -89,6 +95,8 @@ SpriteSheet.prototype = {
         if (desc.y == null) desc.y = base.y;
         if (desc.w == null) desc.w = base.w;
         if (desc.h == null) desc.h = base.h;
+        if (desc.dx == null) desc.dx = base.dx;
+        if (desc.dy == null) desc.dy = base.dy;
         if (desc.dw == null) desc.dw = base.dw;
         if (desc.dh == null) desc.dh = base.dh;
         if (desc.bg == null) desc.bg = base.bg;
@@ -131,8 +139,8 @@ SpriteSheet.prototype = {
         this._preRender(desc.bg, ctx).render(ctx, desc._ax, desc._ay);
       }
       /* Create sprite */
-      var sprite = new Sprite(this.image, {x: desc.x, y: desc.y,
-        w: desc.w, h: desc.h, dw: desc.dw, dh: desc.dh},
+      var sprite = new Sprite(this.image, {x: desc.x, y: desc.y, w: desc.w,
+        h: desc.h, dx: desc.dx, dy: desc.dy, dw: desc.dw, dh: desc.dh},
         desc.transform || null);
       sprite.preRender(this._atlas, ctx, desc._ax, desc._ay);
       this.sprites[name] = sprite;
