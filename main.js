@@ -31,7 +31,9 @@ function init() {
       headL: {base: "headU", transform: "rotCCW"},
       headR: {base: "headU", transform: "rotCW"},
       headMouse: {base: "headU", bg: "mouse"},
-      mouse: {x: 32, y: 0, w: 16, h: 16, dw: 64, dh: 64}
+      mouse: {x: 32, y: 0, w: 16, h: 16, dw: 64, dh: 64},
+      bodyHU: {x: 0, y: 16, w: 16, h: 8, dw: 64, dh: 32},
+      bodyHD: {base: "bodyHU", dy: 32}
     });
     sheet.compose(512);
     $id("gamescreen").appendChild(sheet._atlas);
