@@ -61,20 +61,23 @@ Sprite.prototype = {
 };
 
 /* Wrapper around a collection of prerendered Sprite-s
- * image: The spritesheet common to the sprites
- * descs: Object mapping sprite names to objects sharing the format with
- *        Sprite.selection, with the "transform" attribute stored as an
- *        additional property, if any. The "bg" property can be either a
- *        color (starting with a '#' sign) or a sprite name, which is
- *        used as the background for the sprite (for precompositing).
- *        A "base" property names a description to clone absent properties
- *        from (should not be nested).
+ * image:   The spritesheet common to the sprites
+ * descs:   Object mapping sprite names to objects sharing the format with
+ *          Sprite.selection, with the "transform" attribute stored as an
+ *          additional property, if any. The "bg" property can be either a
+ *          color (starting with a '#' sign) or a sprite name, which is
+ *          used as the background for the sprite (for precompositing).
+ *          A "base" property names a description to clone absent properties
+ *          from (should not be nested).
+ * aliases: An object whose pairs represent alternate names for the same
+ *          sprite (key: "new" name, value: "base" name).
  * Attributes:
  * sprites: Actual sprite storage. Computed by the compose() method.
  */
-function SpriteSheet(image, descs) {
+function SpriteSheet(image, descs, aliases) {
   this.image = image;
   this.descs = descs;
+  this.aliases = null;
   this._atlas = null;
   this.sprites = null;
 }
@@ -124,6 +127,10 @@ SpriteSheet.prototype = {
     for (var name in this.descs) {
       if (! this.descs.hasOwnProperty(name)) continue;
       this._preRender(name, ctx);
+    }
+    for (var name in this.aliases) {
+      if (! this.aliases.hasOwnProperty(name)) continue;
+      this.sprites[name] = this.sprites[this.aliases[name]];
     }
   },
 
