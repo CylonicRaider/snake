@@ -155,3 +155,21 @@ SpriteSheet.prototype = {
     return this.sprites[name];
   }
 };
+
+var SPRITESHEET = new SpriteSheet($id("spritesheet"), {
+  headU: {x: 0, y: 0, w: 16, h: 16, dw: 32, dh: 32},
+  headR: {base: "headU", transform: "rotCW"},
+  headD: {base: "headU", transform: "turn"},
+  headL: {base: "headU", transform: "rotCCW"},
+  bodyV: {x: 0, y: 16, w: 16, h: 16, dw: 32, dh: 32},
+  bodyH: {base: "bodyV", transform: "rotCW"},
+  curveUR: {x: 0, y: 32, w: 16, h: 16, dw: 32, dh: 32},
+  curveRD: {base: "curveUR", transform: "rotCW"},
+  curveDL: {base: "curveUR", transform: "turn"},
+  curveLU: {base: "curveUR", transform: "torCCW"},
+  tailU: {x: 0, y: 48, w: 16, h: 16, dw: 32, dh: 32},
+  tailR: {base: "tailU", transform: "rotCW"},
+  tailD: {base: "tailU", transform: "turn"},
+  tailL: {base: "tailU", transform: "rotCCW"}
+}, {curveRU: "curveUR", curveDR: "curveRD", curveLD: "curveDL",
+  curveUL: "curveLU"});
