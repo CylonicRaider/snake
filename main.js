@@ -24,24 +24,6 @@ function showNode(node) {
 }
 
 function init() {
-  function testSprites(img) {
-    var sheet = new SpriteSheet(img, {
-      headU: {x: 0, y: 0, w: 16, h: 16, dw: 64, dh: 64},
-      headD: {base: "headU", transform: "turn"},
-      headL: {base: "headU", transform: "rotCCW"},
-      headR: {base: "headU", transform: "rotCW"},
-      headMouse: {base: "headU", bg: "mouse"},
-      mouse: {x: 32, y: 0, w: 16, h: 16, dw: 64, dh: 64},
-      bodyHU: {x: 0, y: 16, w: 16, h: 8, dw: 64, dh: 32},
-      bodyHD: {base: "bodyHU", dy: 32}
-    });
-    sheet.compose(512);
-    $id("gamescreen").appendChild(sheet._atlas);
-    showNode("gamescreen");
-  }
-  $listen("start", "click", function() {
-    testSprites($id("spritesheet"));
-  });
   showNode("titlescreen");
 }
 
