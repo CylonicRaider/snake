@@ -41,7 +41,16 @@ Sprite.prototype = {
         case "rotCCW": drain.transform(0, -1, 1, 0, 0, sel.dh); break;
         case "turn": drain.transform(-1, 0, 0, -1, sel.dw, sel.dh); break;
       }
-      drain.drawImage(im, sel.x, sel.y, sel.w, sel.h, 0, 0, sel.dw, sel.dh);
+      /* HACK: Have to swap width and height for correct rendering */
+      var dw, dh;
+      if (tr && /^rot/.test(tr)) {
+        dw = sel.dh;
+        dh = sel.dw;
+      } else {
+        dw = sel.dw;
+        dh = sel.dh;
+      }
+      drain.drawImage(im, sel.x, sel.y, sel.w, sel.h, 0, 0, dw, dh);
       drain.restore();
     }
   },
@@ -56,8 +65,9 @@ Sprite.prototype = {
       this.render(ctx, x, y);
       this._atlas = atlas;
       var sel = this.selection;
-      this._atlasSelection = {x: x, y: y, w: sel.dw, h: sel.dh,
-        dx: 0, dy: 0, dw: sel.dw, dh: sel.dh};
+      this._atlasSelection = {x: x, y: y, w: sel.dx + sel.dw,
+        h: sel.dy + sel.dh, dx: 0, dy: 0, dw: sel.dx + sel.dw,
+        dh: sel.dy + sel.dh};
     }
   }
 };
