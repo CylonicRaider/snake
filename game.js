@@ -182,7 +182,13 @@ var SPRITESHEET = new SpriteSheet($id("spritesheet"), {
   tailU: {x: 0, y: 48, w: 16, h: 16, dw: CELLSIZE, dh: CELLSIZE},
   tailR: {base: "tailU", transform: "rotCW"},
   tailD: {base: "tailU", transform: "turn"},
-  tailL: {base: "tailU", transform: "rotCCW"}
+  tailL: {base: "tailU", transform: "rotCCW"},
+  tailUH: {x: 0, y: 48, w: 16, h: 8, dw: CELLSIZE, dh: CELLSIZE >> 1},
+  tailDH: {base: "tailUH", transform: "turn", dy: CELLSIZE >> 1},
+  tailLH: {base: "tailUH", transform: "rotCCW", dw: CELLSIZE >> 1,
+    dh: CELLSIZE},
+  tailRH: {base: "tailUH", transform: "rotCW", dw: CELLSIZE >> 1,
+    dh: CELLSIZE, dx: CELLSIZE >> 1}
 }, {bodyDU: "bodyUD", bodyLR: "bodyRL", bodyRU: "bodyUR", bodyDR: "bodyRD",
   bodyLD: "bodyDL", bodyUL: "bodyLU"});
 

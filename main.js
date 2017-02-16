@@ -25,7 +25,7 @@ function showNode(node) {
 
 function init() {
   $listen("start", "click", function() {
-    SPRITESHEET.compose();
+    SPRITESHEET.compose(CELLSIZE * 4);
     var game = new Game($id("game"), [20, 15]);
     game.init();
     game._snake = [[10, 5, "U"], [10, 6, "UD"], [10, 7, "U"]];
