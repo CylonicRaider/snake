@@ -166,9 +166,9 @@ var SPRITESHEET = new SpriteSheet($id("spritesheet"), {
   bodyUD: {x: 0, y: 16, w: 16, h: 16, dw: CELLSIZE, dh: CELLSIZE},
   bodyRL: {base: "bodyUD", transform: "rotCW"},
   bodyUR: {x: 0, y: 32, w: 16, h: 16, dw: CELLSIZE, dh: CELLSIZE},
-  bodyRD: {base: "curveUR", transform: "rotCW"},
-  bodyDL: {base: "curveUR", transform: "turn"},
-  bodyLU: {base: "curveUR", transform: "rotCCW"},
+  bodyRD: {base: "bodyUR", transform: "rotCW"},
+  bodyDL: {base: "bodyUR", transform: "turn"},
+  bodyLU: {base: "bodyUR", transform: "rotCCW"},
   tailU: {x: 0, y: 48, w: 16, h: 16, dw: CELLSIZE, dh: CELLSIZE},
   tailR: {base: "tailU", transform: "rotCW"},
   tailD: {base: "tailU", transform: "turn"},
@@ -212,7 +212,7 @@ Game.prototype = {
         } else if (i == length) {
           this._redraws.push([seg[0], seg[1], "tail" + seg[2]]);
         } else {
-          this._redraws.push([seg[0], seg[1], "body" + seg[2]);
+          this._redraws.push([seg[0], seg[1], "body" + seg[2]]);
         }
       }
     }
