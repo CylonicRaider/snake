@@ -1,4 +1,6 @@
 
+var CELLSIZE = 32;
+
 /* Encapsulating a section of a texture atlas along with pre-rendering
  * image    : The texture atlas.
  * selection: An {x, y, w, h, dx, dy, dw, dh} object denoting the section of
@@ -157,17 +159,17 @@ SpriteSheet.prototype = {
 };
 
 var SPRITESHEET = new SpriteSheet($id("spritesheet"), {
-  headU: {x: 0, y: 0, w: 16, h: 16, dw: 32, dh: 32},
+  headU: {x: 0, y: 0, w: 16, h: 16, dw: CELLSIZE, dh: CELLSIZE},
   headR: {base: "headU", transform: "rotCW"},
   headD: {base: "headU", transform: "turn"},
   headL: {base: "headU", transform: "rotCCW"},
-  bodyUD: {x: 0, y: 16, w: 16, h: 16, dw: 32, dh: 32},
+  bodyUD: {x: 0, y: 16, w: 16, h: 16, dw: CELLSIZE, dh: CELLSIZE},
   bodyRL: {base: "bodyUD", transform: "rotCW"},
-  bodyUR: {x: 0, y: 32, w: 16, h: 16, dw: 32, dh: 32},
+  bodyUR: {x: 0, y: 32, w: 16, h: 16, dw: CELLSIZE, dh: CELLSIZE},
   bodyRD: {base: "curveUR", transform: "rotCW"},
   bodyDL: {base: "curveUR", transform: "turn"},
-  bodyLU: {base: "curveUR", transform: "torCCW"},
-  tailU: {x: 0, y: 48, w: 16, h: 16, dw: 32, dh: 32},
+  bodyLU: {base: "curveUR", transform: "rotCCW"},
+  tailU: {x: 0, y: 48, w: 16, h: 16, dw: CELLSIZE, dh: CELLSIZE},
   tailR: {base: "tailU", transform: "rotCW"},
   tailD: {base: "tailU", transform: "turn"},
   tailL: {base: "tailU", transform: "rotCCW"}
