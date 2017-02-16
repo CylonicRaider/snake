@@ -1,6 +1,8 @@
 
 var CELLSIZE = 32;
 
+var TURNDIR = {U: "D", D: "U", R: "L", L: "R"};
+
 /* Encapsulating a section of a texture atlas along with pre-rendering
  * image    : The texture atlas.
  * selection: An {x, y, w, h, dx, dy, dw, dh} object denoting the section of
@@ -89,7 +91,7 @@ Sprite.prototype = {
 function SpriteSheet(image, descs, aliases) {
   this.image = image;
   this.descs = descs;
-  this.aliases = null;
+  this.aliases = aliases;
   this._atlas = null;
   this.sprites = null;
 }
@@ -146,6 +148,7 @@ SpriteSheet.prototype = {
       if (! this.aliases.hasOwnProperty(name)) continue;
       this.sprites[name] = this.sprites[this.aliases[name]];
     }
+    console.log(this.sprites);
   },
 
   /* Pre-render the sprite description as given by name */
@@ -185,18 +188,11 @@ var SPRITESHEET = new SpriteSheet($id("spritesheet"), {
   tailR: {base: "tailU", transform: "rotCW"},
   tailD: {base: "tailU", transform: "turn"},
   tailL: {base: "tailU", transform: "rotCCW"},
-  bodyUH: {x: 0, y: 16, w: 16, h: 8, dw: CELLSIZE, dh: CELLSIZE >> 1},
-  bodyDH: {base: "bodyUH", transform: "turn", dy: CELLSIZE >> 1},
-  bodyLH: {base: "bodyUH", transform: "rotCCW", dw: CELLSIZE >> 1,
-    dh: CELLSIZE},
-  bodyRH: {base: "bodyUH", transform: "rotCW", dw: CELLSIZE >> 1,
-    dh: CELLSIZE, dx: CELLSIZE >> 1},
-  tailUH: {x: 0, y: 48, w: 16, h: 8, dw: CELLSIZE, dh: CELLSIZE >> 1},
-  tailDH: {base: "tailUH", transform: "turn", dy: CELLSIZE >> 1},
-  tailLH: {base: "tailUH", transform: "rotCCW", dw: CELLSIZE >> 1,
-    dh: CELLSIZE},
-  tailRH: {base: "tailUH", transform: "rotCW", dw: CELLSIZE >> 1,
-    dh: CELLSIZE, dx: CELLSIZE >> 1}
+  egg: {x: 16, y: 0, w: 16, h: 16, dw: CELLSIZE, dh: CELLSIZE},
+  arrowU: {x: 16, y: 32, w: 16, h: 16, dw: CELLSIZE, dh: CELLSIZE},
+  arrowR: {base: "arrowU", transform: "rotCW"},
+  arrowD: {base: "arrowU", transform: "turn"},
+  arrowL: {base: "arrowU", transform: "rotCCW"}
 }, {bodyDU: "bodyUD", bodyLR: "bodyRL", bodyRU: "bodyUR", bodyDR: "bodyRD",
   bodyLD: "bodyDL", bodyUL: "bodyLU"});
 
@@ -207,7 +203,10 @@ function Game(canvas, size) {
   this.canvas = canvas;
   this.size = size;
   this._context = null;
+  this._egg = null;
+  this._direction = null;
   this._snake = [];
+  this._grow = 0;
   this._clears = [];
   this._redraws = [];
   this._running = false;
@@ -229,15 +228,25 @@ Game.prototype = {
       this._clears = [];
       this._redraws = [];
       var snake = this._snake, length = this._snake.length - 1;
-      for (var i = 0; i <= length; i++) {
-        var seg = snake[i];
-        if (i == 0) {
-          this._redraws.push([seg[0], seg[1], "head" + seg[2]]);
-        } else if (i == length) {
-          this._redraws.push([seg[0], seg[1], "tail" + seg[2]]);
-        } else {
-          this._redraws.push([seg[0], seg[1], "body" + seg[2]]);
+      /* HACK: Avoid drawing single-segment snake */
+      if (length > 0) {
+        for (var i = 0; i <= length; i++) {
+          var seg = snake[i];
+          if (i == 0) {
+            this._redraws.push([seg[0], seg[1], "head" + seg[2]]);
+          } else if (i == length) {
+            this._redraws.push([seg[0], seg[1], "tail" + seg[2]]);
+          } else {
+            this._redraws.push([seg[0], seg[1],
+              "body" + seg[2] + TURNDIR[snake[i + 1][2]]]);
+          }
         }
+      }
+      if (this._egg) {
+        this._redraws.push([this._egg[0], this._egg[1], "egg"]);
+        if (this._snake.length == 0)
+          this._redraws.push([this._egg[0], this._egg[1],
+                             "arrow" + this._direction]);
       }
     }
     if (this._clears.length) {
@@ -257,5 +266,53 @@ Game.prototype = {
         sprites[it[2]].render(ctx, it[0] * CELLSIZE, it[1] * CELLSIZE);
       }
     }
+  },
+
+  /* Update the game state */
+  update: function() {
+    if (! this._running) return;
+    /* Remove a node. */
+    if (this._grow <= 0) {
+      if (this._snake.length <= 3) {
+        this._running = false;
+        return;
+      }
+      /* Remove egg if necessary */
+      if (this._egg) {
+        var tail = this._snake[this._snake.length - 1];
+        if (tail[0] == this._egg[0] && tail[1] == this._egg[1]) {
+          this._egg = null;
+        }
+      }
+      this._snake.pop();
+      this._grow++;
+    }
+    /* Add a new node. */
+    if (this._grow >= 0) {
+      if (this._snake.length == 0) {
+        /* Hatching */
+        this._snake.push([this._egg[0], this._egg[1], this._direction]);
+      } else {
+        var newX = this._snake[0][0], newY = this._snake[0][1];
+        switch (this._direction) {
+          case "U": newY--; if (newY < 0) newY += this.size[1]; break;
+          case "R": newX++; if (newX >= this.size[0]) newX = 0; break;
+          case "D": newY++; if (newY >= this.size[1]) newX = 0; break;
+          case "L": newX--; if (newX < 0) newX += this.size[0]; break;
+        }
+        this._snake[0][2] = this._direction;
+        this._snake.splice(0, 0, [newX, newY, this._direction]);
+      }
+      this._grow--;
+    }
+  },
+
+  /* Main game loop */
+  main: function() {
+    var int = setInterval(function() {
+      this.update();
+      this.render(true);
+      if (! this._running) clearInterval(int);
+    }.bind(this), 100);
   }
 };

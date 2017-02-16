@@ -24,13 +24,29 @@ function showNode(node) {
 }
 
 function init() {
+  var game;
   $listen("start", "click", function() {
     SPRITESHEET.compose(CELLSIZE * 8);
-    var game = new Game($id("game"), [20, 15]);
+    game = new Game($id("game"), [20, 15]);
     game.init();
-    game._snake = [[10, 5, "U"], [10, 6, "UD"], [10, 7, "U"]];
+    game._egg = [10, 7];
+    game._direction = "R";
+    game._grow = 5;
+    game._running = true;
     game.render(true);
     showNode("gamescreen");
+    game.main();
+    $id("game").focus();
+  });
+  $listen("game", "keydown", function(event) {
+    if (! game) return;
+    switch (event.keyCode) {
+      case 27: game._running = false; break;
+      case 38: game._direction = "U"; break;
+      case 39: game._direction = "R"; break;
+      case 40: game._direction = "D"; break;
+      case 37: game._direction = "L"; break;
+    }
   });
   showNode("titlescreen");
 }
