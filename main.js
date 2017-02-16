@@ -24,6 +24,14 @@ function showNode(node) {
 }
 
 function init() {
+  $listen("start", "click", function() {
+    SPRITESHEET.compose();
+    var game = new Game($id("game"), [20, 15]);
+    game.init();
+    game._snake = [[10, 5, "U"], [10, 6, "UD"], [10, 7, "U"]];
+    game.render(true);
+    showNode("gamescreen");
+  });
   showNode("titlescreen");
 }
 
