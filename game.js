@@ -116,10 +116,12 @@ SpriteSheet.prototype = {
         if (desc.dh == null) desc.dh = base.dh;
         if (desc.bg == null) desc.bg = base.bg;
       }
+      if (desc.dx == null) desc.dx = 0;
+      if (desc.dy == null) desc.dy = 0;
       if (desc.dw == null) desc.dw = desc.w;
       if (desc.dh == null) desc.dh = desc.h;
       /* Check if it fits */
-      if (x + desc.dw > width) {
+      if (x + desc.dx + desc.dw > width) {
         x = 0;
         y += lh;
         l++;
@@ -127,8 +129,8 @@ SpriteSheet.prototype = {
       }
       desc._ax = x;
       desc._ay = y;
-      x += desc.dw;
-      if (lh < desc.dh) lh = desc.dh;
+      x += desc.dx + desc.dw;
+      if (lh < desc.dy + desc.dh) lh = desc.dy + desc.dh;
     }
     var height = y + lh;
     this._atlas = document.createElement('canvas');
@@ -183,6 +185,12 @@ var SPRITESHEET = new SpriteSheet($id("spritesheet"), {
   tailR: {base: "tailU", transform: "rotCW"},
   tailD: {base: "tailU", transform: "turn"},
   tailL: {base: "tailU", transform: "rotCCW"},
+  bodyUH: {x: 0, y: 16, w: 16, h: 8, dw: CELLSIZE, dh: CELLSIZE >> 1},
+  bodyDH: {base: "bodyUH", transform: "turn", dy: CELLSIZE >> 1},
+  bodyLH: {base: "bodyUH", transform: "rotCCW", dw: CELLSIZE >> 1,
+    dh: CELLSIZE},
+  bodyRH: {base: "bodyUH", transform: "rotCW", dw: CELLSIZE >> 1,
+    dh: CELLSIZE, dx: CELLSIZE >> 1},
   tailUH: {x: 0, y: 48, w: 16, h: 8, dw: CELLSIZE, dh: CELLSIZE >> 1},
   tailDH: {base: "tailUH", transform: "turn", dy: CELLSIZE >> 1},
   tailLH: {base: "tailUH", transform: "rotCCW", dw: CELLSIZE >> 1,
