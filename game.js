@@ -175,3 +175,63 @@ var SPRITESHEET = new SpriteSheet($id("spritesheet"), {
   tailL: {base: "tailU", transform: "rotCCW"}
 }, {bodyDU: "bodyUD", bodyLR: "bodyRL", bodyRU: "bodyUR", bodyDR: "bodyRD",
   bodyLD: "bodyDL", bodyUL: "bodyLU"});
+
+/* The actual game engine
+ * canvas is the canvas to render on; size is the board size (in cells). The
+ * dimensions of the canvas are set dynamically (in the init() method). */
+function Game(canvas, size) {
+  this.canvas = canvas;
+  this.size = size;
+  this._context = null;
+  this._snake = [];
+  this._clears = [];
+  this._redraws = [];
+  this._running = false;
+}
+
+Game.prototype = {
+  /* Perform general initialization */
+  init: function() {
+    this.canvas.width = this.size[0] * CELLSIZE;
+    this.canvas.height = this.size[1] * CELLSIZE;
+    this._context = this.canvas.getContext('2d');
+  },
+
+  /* Render the game */
+  render: function(full) {
+    var ctx = this._context;
+    if (full) {
+      ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this._clears = [];
+      this._redraws = [];
+      var snake = this._snake, length = this._snake.length - 1;
+      for (var i = 0; i <= length; i++) {
+        var seg = snake[i];
+        if (i == 0) {
+          this._redraws.push([seg[0], seg[1], "head" + seg[2]]);
+        } else if (i == length) {
+          this._redraws.push([seg[0], seg[1], "tail" + seg[2]]);
+        } else {
+          this._redraws.push([seg[0], seg[1], "body" + seg[2]);
+        }
+      }
+    }
+    if (this._clears.length) {
+      var queue = this._clears;
+      this._clears = [];
+      for (var i = 0; i < queue.length; i++) {
+        var it = queue[i];
+        ctx.clearRect(it[0] * CELLSIZE, it[1] * CELLSIZE,
+                      CELLSIZE, CELLSIZE);
+      }
+    }
+    if (this._redraws.length) {
+      var queue = this._redraws, sprites = SPRITESHEET.sprites;
+      this._redraws = [];
+      for (var i = 0; i < queue.length; i++) {
+        var it = queue[i];
+        sprites[it[2]].render(ctx, it[0] * CELLSIZE, it[1] * CELLSIZE);
+      }
+    }
+  }
+};
