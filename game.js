@@ -5,22 +5,17 @@ var TURNDIR = {U: "D", D: "U", R: "L", L: "R"};
 
 /* Encapsulating a section of a texture atlas along with pre-rendering
  * image    : The texture atlas.
- * selection: An {x, y, w, h, dx, dy, dw, dh} object denoting the section of
- *            the texture atlas to use and how to display it. x, y, w, and h
- *            select a rectangular part of the source image; dx and dy store
- *            a displacement to apply when rendering, and dw and dh contain
- *            a size to scale the image to. Whilst x, y, w, and h must be
- *            present, dx and dy default to zero and dw and dh to w and h,
- *            respectively.
+ * selection: An {x, y, s, ds} object denoting the section of the texture
+ *            atlas to use and how to display it. x, y, and s select a
+ *            rectangular part (of size s*s) of the source image; ds contains
+ *            a size to scale the image to. ds defaults to s; all other
+ *            members must be present.
  * transform: Currently, null (for none) or one of the following keywords:
  *            rotCW : Rotate clockwise by ninety degrees.
  *            rotCCW: Rotate counterclockwise by ninety degrees.
  *            turn  : Rotate by 180 degrees. */
 function Sprite(image, selection, transform) {
-  if (selection.dx == null) selection.dx = 0;
-  if (selection.dy == null) selection.dy = 0;
-  if (selection.dw == null) selection.dw = selection.w;
-  if (selection.dh == null) selection.dh = selection.h;
+  if (selection.ds == null) selection.ds = selection.s;
   this.image = image;
   this.selection = selection;
   this.transform = transform;
@@ -33,26 +28,17 @@ Sprite.prototype = {
   render: function(drain, x, y) {
     if (this._atlas) {
       var im = this._atlas, sel = this._atlasSelection;
-      drain.drawImage(im, sel.x, sel.y, sel.w, sel.h, x, y, sel.dw, sel.dh);
+      drain.drawImage(im, sel.x, sel.y, sel.s, sel.s, x, y, sel.ds, sel.ds);
     } else {
       var im = this.image, sel = this.selection, tr = this.transform;
       drain.save();
-      drain.translate(x + sel.dx, y + sel.dy);
+      drain.translate(x, y);
       switch (tr) {
-        case "rotCW": drain.transform(0, 1, -1, 0, sel.dw, 0); break;
-        case "rotCCW": drain.transform(0, -1, 1, 0, 0, sel.dh); break;
-        case "turn": drain.transform(-1, 0, 0, -1, sel.dw, sel.dh); break;
+        case "rotCW": drain.transform(0, 1, -1, 0, sel.ds, 0); break;
+        case "rotCCW": drain.transform(0, -1, 1, 0, 0, sel.ds); break;
+        case "turn": drain.transform(-1, 0, 0, -1, sel.ds, sel.ds); break;
       }
-      /* HACK: Have to swap width and height for correct rendering */
-      var dw, dh;
-      if (tr && /^rot/.test(tr)) {
-        dw = sel.dh;
-        dh = sel.dw;
-      } else {
-        dw = sel.dw;
-        dh = sel.dh;
-      }
-      drain.drawImage(im, sel.x, sel.y, sel.w, sel.h, 0, 0, dw, dh);
+      drain.drawImage(im, sel.x, sel.y, sel.s, sel.s, 0, 0, sel.ds, sel.ds);
       drain.restore();
     }
   },
@@ -67,9 +53,7 @@ Sprite.prototype = {
       this.render(ctx, x, y);
       this._atlas = atlas;
       var sel = this.selection;
-      this._atlasSelection = {x: x, y: y, w: sel.dx + sel.dw,
-        h: sel.dy + sel.dh, dx: 0, dy: 0, dw: sel.dx + sel.dw,
-        dh: sel.dy + sel.dh};
+      this._atlasSelection = {x: x, y: y, s: sel.ds, ds: sel.ds};
     }
   }
 };
@@ -110,20 +94,13 @@ SpriteSheet.prototype = {
         var base = this.descs[desc.base];
         if (desc.x == null) desc.x = base.x;
         if (desc.y == null) desc.y = base.y;
-        if (desc.w == null) desc.w = base.w;
-        if (desc.h == null) desc.h = base.h;
-        if (desc.dx == null) desc.dx = base.dx;
-        if (desc.dy == null) desc.dy = base.dy;
-        if (desc.dw == null) desc.dw = base.dw;
-        if (desc.dh == null) desc.dh = base.dh;
+        if (desc.s == null) desc.s = base.s;
+        if (desc.ds == null) desc.ds = base.ds;
         if (desc.bg == null) desc.bg = base.bg;
       }
-      if (desc.dx == null) desc.dx = 0;
-      if (desc.dy == null) desc.dy = 0;
-      if (desc.dw == null) desc.dw = desc.w;
-      if (desc.dh == null) desc.dh = desc.h;
+      if (desc.ds == null) desc.ds = desc.s;
       /* Check if it fits */
-      if (x + desc.dx + desc.dw > width) {
+      if (x + desc.ds > width) {
         x = 0;
         y += lh;
         l++;
@@ -131,8 +108,8 @@ SpriteSheet.prototype = {
       }
       desc._ax = x;
       desc._ay = y;
-      x += desc.dx + desc.dw;
-      if (lh < desc.dy + desc.dh) lh = desc.dy + desc.dh;
+      x += desc.ds;
+      if (lh < desc.ds) lh = desc.ds;
     }
     var height = y + lh;
     this._atlas = document.createElement('canvas');
@@ -148,7 +125,6 @@ SpriteSheet.prototype = {
       if (! this.aliases.hasOwnProperty(name)) continue;
       this.sprites[name] = this.sprites[this.aliases[name]];
     }
-    console.log(this.sprites);
   },
 
   /* Pre-render the sprite description as given by name */
@@ -158,14 +134,13 @@ SpriteSheet.prototype = {
       var desc = this.descs[name];
       if (/^#/.test(desc.bg)) {
         ctx.fillStyle = desc.bg;
-        ctx.fillRect(desc._ax, desc._ay, desc.dw, desc.dh);
+        ctx.fillRect(desc._ax, desc._ay, desc.ds, desc.ds);
       } else if (desc.bg) {
         this._preRender(desc.bg, ctx).render(ctx, desc._ax, desc._ay);
       }
       /* Create sprite */
-      var sprite = new Sprite(this.image, {x: desc.x, y: desc.y, w: desc.w,
-        h: desc.h, dx: desc.dx, dy: desc.dy, dw: desc.dw, dh: desc.dh},
-        desc.transform || null);
+      var sprite = new Sprite(this.image, {x: desc.x, y: desc.y, s: desc.s,
+        ds: desc.ds}, desc.transform || null);
       sprite.preRender(this._atlas, ctx, desc._ax, desc._ay);
       this.sprites[name] = sprite;
     }
@@ -174,22 +149,22 @@ SpriteSheet.prototype = {
 };
 
 var SPRITESHEET = new SpriteSheet($id("spritesheet"), {
-  headU: {x: 0, y: 0, w: 16, h: 16, dw: CELLSIZE, dh: CELLSIZE},
+  headU: {x: 0, y: 0, s: 16, ds: CELLSIZE},
   headR: {base: "headU", transform: "rotCW"},
   headD: {base: "headU", transform: "turn"},
   headL: {base: "headU", transform: "rotCCW"},
-  bodyUD: {x: 0, y: 16, w: 16, h: 16, dw: CELLSIZE, dh: CELLSIZE},
+  bodyUD: {x: 0, y: 16, s: 16, ds: CELLSIZE},
   bodyRL: {base: "bodyUD", transform: "rotCW"},
-  bodyUR: {x: 0, y: 32, w: 16, h: 16, dw: CELLSIZE, dh: CELLSIZE},
+  bodyUR: {x: 0, y: 32, s: 16, ds: CELLSIZE},
   bodyRD: {base: "bodyUR", transform: "rotCW"},
   bodyDL: {base: "bodyUR", transform: "turn"},
   bodyLU: {base: "bodyUR", transform: "rotCCW"},
-  tailU: {x: 0, y: 48, w: 16, h: 16, dw: CELLSIZE, dh: CELLSIZE},
+  tailU: {x: 0, y: 48, s: 16, ds: CELLSIZE},
   tailR: {base: "tailU", transform: "rotCW"},
   tailD: {base: "tailU", transform: "turn"},
   tailL: {base: "tailU", transform: "rotCCW"},
-  egg: {x: 16, y: 0, w: 16, h: 16, dw: CELLSIZE, dh: CELLSIZE},
-  arrowU: {x: 16, y: 32, w: 16, h: 16, dw: CELLSIZE, dh: CELLSIZE},
+  egg: {x: 16, y: 0, s: 16, ds: CELLSIZE},
+  arrowU: {x: 16, y: 32, s: 16, ds: CELLSIZE},
   arrowR: {base: "arrowU", transform: "rotCW"},
   arrowD: {base: "arrowU", transform: "turn"},
   arrowL: {base: "arrowU", transform: "rotCCW"}
