@@ -7,8 +7,9 @@ function $listen(node, event, handler) {
   node.addEventListener(event, handler);
 }
 
-function showNode(node) {
+function showNode(node, focus) {
   if (typeof node == "string") node = $id(node);
+  if (typeof focus == "string") focus = $id(focus);
   if (! node || ! node.classList.contains("pane")) return;
   var prev = node.previousElementSibling, next = node.nextElementSibling;
   while (prev) {
@@ -25,6 +26,7 @@ function showNode(node) {
     child.classList.remove("visible");
   }
   node.classList.add("visible");
+  if (focus != null) focus.focus();
 }
 
 function init() {
@@ -35,9 +37,9 @@ function init() {
     game.onevent = function(event) {
       if (event.type == "status") {
         switch (event.status) {
-          case "running": showNode("gamescreen"); $id("game").focus(); break;
-          case "paused": showNode("pausescreen"); break;
-          case "dead": showNode("overscreen"); break;
+          case "running": showNode("gamescreen", "game"); break;
+          case "paused": showNode("pausescreen", "resume"); break;
+          case "dead": showNode("overscreen", "restart"); break;
         }
       }
     };
@@ -47,9 +49,8 @@ function init() {
     game._grow = 5;
     game.pause(false);
     game.render(true);
-    showNode("gamescreen");
+    showNode("gamescreen", "game");
     game.main();
-    $id("game").focus();
   });
   $listen("game", "keydown", function(event) {
     if (! game) return;
