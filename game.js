@@ -296,7 +296,7 @@ Game.prototype = {
   /* Controls */
   turnSnake: function(dir) {
     if (! TURNDIR.hasOwnProperty(dir)) return;
-    if (dir == TURNDIR[this._direction]) return;
+    if (this._snake.length && dir == TURNDIR[this._snake[0][2]]) return;
     this._direction = dir;
   },
 
