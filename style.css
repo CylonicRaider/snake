@@ -52,13 +52,14 @@ h1 {
   font-size: 2em;
   letter-spacing: 0.05em;
 }
-h1 + p {
-  font-style: italic;
-}
 
 h2 {
   font-variant: small-caps;
   font-size: 1.5em;
+}
+
+h1 + p, h2 + p {
+  font-style: italic;
 }
 
 #assets {

@@ -280,7 +280,7 @@ Game.prototype = {
         this._snake.splice(0, 0, [newX, newY, this._direction]);
         for (var i = 1; i < this._snake.length; i++) {
           if (this._snake[i][0] == newX && this._snake[i][1] == newY) {
-            this.die("crashed into itself");
+            this.die("crashed into self");
             return;
           }
         }

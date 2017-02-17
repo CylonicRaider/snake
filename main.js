@@ -36,6 +36,10 @@ function init() {
     game = new Game($id("game"), [20, 15]);
     game.onevent = function(event) {
       if (event.type == "status") {
+        if (event.status == "dead") {
+          var explanation = "Reason: \u201c" + event.reason + "\u201d.";
+          $id("death-reason").textContent = explanation;
+        }
         switch (event.status) {
           case "running": showNode("gamescreen", "game"); break;
           case "paused": showNode("pausescreen", "resume"); break;
