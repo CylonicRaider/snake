@@ -272,7 +272,7 @@ Game.prototype = {
         switch (this._direction) {
           case "U": newY--; if (newY < 0) newY += this.size[1]; break;
           case "R": newX++; if (newX >= this.size[0]) newX = 0; break;
-          case "D": newY++; if (newY >= this.size[1]) newX = 0; break;
+          case "D": newY++; if (newY >= this.size[1]) newY = 0; break;
           case "L": newX--; if (newX < 0) newX += this.size[0]; break;
         }
         this._snake[0][2] = this._direction;
