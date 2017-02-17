@@ -177,6 +177,7 @@ var SPRITESHEET = new SpriteSheet($id("spritesheet"), {
 function Game(canvas, size) {
   this.canvas = canvas;
   this.size = size;
+  this.onevent = null;
   this.status = "idle";
   this._context = null;
   this._egg = null;
@@ -249,7 +250,7 @@ Game.prototype = {
     /* Remove a node. */
     if (this._grow <= 0) {
       if (this._snake.length <= 3) {
-        this.status = "dead";
+        this.die("too short");
         return;
       }
       /* Remove egg if necessary */
@@ -307,5 +308,14 @@ Game.prototype = {
     } else {
       this.status = "running";
     }
+    if (this.onevent)
+      this.onevent({type: "status", status: this.status, reason: "pause"});
+  },
+
+  /* Stop the game */
+  die: function(reason) {
+    this.status = "dead";
+    if (this.onevent)
+      this.onevent({type: "status", status: "dead", reason: reason});
   }
 };

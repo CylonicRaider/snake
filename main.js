@@ -20,6 +20,10 @@ function showNode(node) {
     next = next.nextElementSibling;
   }
   showNode(node.parentNode);
+  for (var child = node.firstElementChild; child;
+       child = child.nextElementSibling) {
+    child.classList.remove("visible");
+  }
   node.classList.add("visible");
 }
 
@@ -28,10 +32,20 @@ function init() {
   $listen("start", "click", function() {
     SPRITESHEET.compose(CELLSIZE * 8);
     game = new Game($id("game"), [20, 15]);
+    game.onevent = function(event) {
+      if (event.type == "status") {
+        switch (event.status) {
+          case "running": showNode("gamescreen"); $id("game").focus(); break;
+          case "paused": showNode("pausescreen"); break;
+          case "dead": showNode("overscreen"); break;
+        }
+      }
+    };
     game.init();
     game._egg = [10, 7];
     game._direction = "R";
     game._grow = 5;
+    game.pause(false);
     game.render(true);
     showNode("gamescreen");
     game.main();
@@ -40,7 +54,7 @@ function init() {
   $listen("game", "keydown", function(event) {
     if (! game) return;
     switch (event.keyCode) {
-      case 27: game._running = false; break;
+      case 27: game.die("player quit"); break;
       case 38: game.turnSnake("U"); break;
       case 39: game.turnSnake("R"); break;
       case 40: game.turnSnake("D"); break;
@@ -48,10 +62,13 @@ function init() {
     }
   });
   $listen("game", "blur", function(event) {
-    if (game) game.pause(true);
+    if (game && game.status == "running") game.pause(true);
   });
   $listen("game", "focus", function(event) {
-    if (game) game.pause(false);
+    if (game && game.status == "paused") game.pause(false);
+  });
+  $listen("resume", "click", function(event) {
+    if (game && game.status == "paused") game.pause(false);
   });
   showNode("titlescreen");
 }
