@@ -65,3 +65,7 @@ h1 + p, h2 + p {
 #assets {
   display: none;
 }
+
+#game {
+  border: 2px solid black;
+}

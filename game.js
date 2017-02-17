@@ -249,10 +249,8 @@ Game.prototype = {
     if (this.status != "running") return;
     /* Remove a node. */
     if (this._grow <= 0) {
-      if (this._snake.length < 3) {
-        this.die("too short");
-        return;
-      }
+      if (this._snake.length < 3)
+        return this.die("too short");
       /* Remove egg if necessary */
       if (this._egg) {
         var tail = this._snake[this._snake.length - 1];
@@ -270,20 +268,23 @@ Game.prototype = {
         this._snake.push([this._egg[0], this._egg[1], this._direction]);
       } else {
         var newX = this._snake[0][0], newY = this._snake[0][1];
+        var t = this.toroidal;
         switch (this._direction) {
-          case "U": newY--; if (newY < 0) newY += this.size[1]; break;
-          case "R": newX++; if (newX >= this.size[0]) newX = 0; break;
-          case "D": newY++; if (newY >= this.size[1]) newY = 0; break;
-          case "L": newX--; if (newX < 0) newX += this.size[0]; break;
+          case "U": if (--newY < 0 && t) newY += this.size[1]; break;
+          case "R": if (++newX >= this.size[0] && t) newX = 0; break;
+          case "D": if (++newY >= this.size[1] && t) newY = 0; break;
+          case "L": if (--newX < 0 && t) newX += this.size[0]; break;
         }
         this._snake[0][2] = this._direction;
         this._snake.splice(0, 0, [newX, newY, this._direction]);
         for (var i = 1; i < this._snake.length; i++) {
           if (this._snake[i][0] == newX && this._snake[i][1] == newY) {
-            this.die("crashed into self");
-            return;
+            return this.die("crashed into self");
           }
         }
+        if (newX < 0 || newX >= this.size[0] || newY < 0 ||
+            newY >= this.size[1])
+          return this.die("crashed into wall");
       }
       this._grow--;
     }
