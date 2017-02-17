@@ -32,7 +32,7 @@ function init() {
     game._egg = [10, 7];
     game._direction = "R";
     game._grow = 5;
-    game._running = true;
+    game.status = "running";
     game.render(true);
     showNode("gamescreen");
     game.main();
