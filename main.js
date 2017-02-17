@@ -32,7 +32,6 @@ function init() {
     game._egg = [10, 7];
     game._direction = "R";
     game._grow = 5;
-    game.status = "running";
     game.render(true);
     showNode("gamescreen");
     game.main();
@@ -47,6 +46,12 @@ function init() {
       case 40: game.turnSnake("D"); break;
       case 37: game.turnSnake("L"); break;
     }
+  });
+  $listen("game", "blur", function(event) {
+    if (game) game.pause(true);
+  });
+  $listen("game", "focus", function(event) {
+    if (game) game.pause(false);
   });
   showNode("titlescreen");
 }

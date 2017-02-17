@@ -287,7 +287,8 @@ Game.prototype = {
     var int = setInterval(function() {
       this.update();
       this.render(true);
-      if (this.status != "running") clearInterval(int);
+      if (this.status != "running" && this.status != "paused")
+        clearInterval(int);
     }.bind(this), 100);
   },
 
@@ -296,5 +297,15 @@ Game.prototype = {
     if (! TURNDIR.hasOwnProperty(dir)) return;
     if (dir == TURNDIR[this._direction]) return;
     this._direction = dir;
+  },
+
+  /* Pause or unpause game */
+  pause: function(state) {
+    if (state == null) state = (this.status != "paused");
+    if (state) {
+      this.status = "paused";
+    } else {
+      this.status = "running";
+    }
   }
 };
