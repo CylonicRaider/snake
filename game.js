@@ -289,5 +289,12 @@ Game.prototype = {
       this.render(true);
       if (! this._running) clearInterval(int);
     }.bind(this), 100);
+  },
+
+  /* Controls */
+  turnSnake: function(dir) {
+    if (! TURNDIR.hasOwnProperty(dir)) return;
+    if (dir == TURNDIR[this._direction]) return;
+    this._direction = dir;
   }
 };

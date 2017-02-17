@@ -42,10 +42,10 @@ function init() {
     if (! game) return;
     switch (event.keyCode) {
       case 27: game._running = false; break;
-      case 38: game._direction = "U"; break;
-      case 39: game._direction = "R"; break;
-      case 40: game._direction = "D"; break;
-      case 37: game._direction = "L"; break;
+      case 38: game.turnSnake("U"); break;
+      case 39: game.turnSnake("R"); break;
+      case 40: game.turnSnake("D"); break;
+      case 37: game.turnSnake("L"); break;
     }
   });
   showNode("titlescreen");
