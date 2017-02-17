@@ -206,7 +206,7 @@ Game.prototype = {
       var snake = this._snake, length = this._snake.length - 1;
       /* HACK: Avoid drawing single-segment snake */
       if (length > 0) {
-        for (var i = 0; i <= length; i++) {
+        for (var i = length; i >= 0; i--) {
           var seg = snake[i];
           if (i == 0) {
             this._redraws.push([seg[0], seg[1], "head" + seg[2]]);
@@ -278,6 +278,12 @@ Game.prototype = {
         }
         this._snake[0][2] = this._direction;
         this._snake.splice(0, 0, [newX, newY, this._direction]);
+        for (var i = 1; i < this._snake.length; i++) {
+          if (this._snake[i][0] == newX && this._snake[i][1] == newY) {
+            this.die("crashed into itself");
+            return;
+          }
+        }
       }
       this._grow--;
     }
