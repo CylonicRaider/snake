@@ -249,7 +249,7 @@ Game.prototype = {
     if (this.status != "running") return;
     /* Remove a node. */
     if (this._grow <= 0) {
-      if (this._snake.length <= 3) {
+      if (this._snake.length < 3) {
         this.die("too short");
         return;
       }
