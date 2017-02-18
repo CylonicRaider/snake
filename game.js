@@ -3,6 +3,10 @@ var CELLSIZE = 32;
 
 var TURNDIR = {U: "D", D: "U", R: "L", L: "R"};
 
+function rndChoice(array) {
+  return array[Math.random() * array.length | 0];
+}
+
 /* Encapsulating a section of a texture atlas along with pre-rendering
  * image    : The texture atlas.
  * selection: An {x, y, s, ds} object denoting the section of the texture
@@ -196,6 +200,14 @@ Game.prototype = {
     this._context = this.canvas.getContext('2d');
   },
 
+  /* Load the level with given number */
+  loadLevel: function(levnum) {
+    this._egg = [this.size[0] >> 1, this.size[1] >> 1];
+    this._direction = rndChoice("URDL");
+    this._snake = [];
+    this._grow = 5;
+  },
+
   /* Render the game */
   render: function(full) {
     var ctx = this._context;
@@ -292,6 +304,10 @@ Game.prototype = {
 
   /* Main game loop */
   main: function() {
+    this.status = "running";
+    if (this.onevent)
+      this.onevent({type: "status", status: "running", reason: "started"});
+    this.render(true);
     var int = setInterval(function() {
       this.update();
       this.render(true);

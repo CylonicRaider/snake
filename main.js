@@ -48,11 +48,7 @@ function init() {
       }
     };
     game.init();
-    game._egg = [10, 7];
-    game._direction = "R";
-    game._grow = 5;
-    game.pause(false);
-    game.render(true);
+    game.loadLevel(0);
     showNode("gamescreen", "game");
     game.main();
   });
@@ -74,6 +70,12 @@ function init() {
   });
   $listen("resume", "click", function(event) {
     if (game && game.status == "paused") game.pause(false);
+  });
+  $listen("restart", "click", function(event) {
+    if (game && game.status == "dead") {
+      game.loadLevel(0);
+      game.main();
+    }
   });
   showNode("titlescreen");
 }
