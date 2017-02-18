@@ -232,6 +232,8 @@ Game.prototype = {
       this._fullRender = false;
       this._clears = [];
       this._redraws = [];
+      if (this._mouse) this._markDirty(this._mouse, false, "mouse");
+      if (this._gem) this._markDirty(this._gem, false, "gem");
       /* HACK: Avoid drawing single-segment snake */
       if (this._snake.length > 1) {
         for (var i = this._snake.length - 1; i >= 0; i--) {
