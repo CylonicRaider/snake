@@ -307,6 +307,23 @@ Game.prototype = {
         } while (! this._freeSpot(newMouse));
         this._mouse = newMouse;
         this._markDirty(this._mouse, false, "mouse");
+      } else {
+        var newMouse = [this._mouse[0], this._mouse[1]];
+        switch (rndChoice("URDL")) {
+          case "U": newMouse[1]--; break;
+          case "R": newMouse[0]++; break;
+          case "D": newMouse[1]++; break;
+          case "L": newMouse[0]--; break;
+        }
+        if (newMouse[0] < 0 || newMouse[0] >= this.size[0] ||
+            newMouse[1] < 0 || newMouse[1] >= this.size[1]) {
+          this._markDirty(this._mouse, true);
+          this._mouse = null;
+        } else if (this._freeSpot(newMouse)) {
+          this._markDirty(this._mouse, true);
+          this._mouse = newMouse;
+          this._markDirty(this._mouse, false, "mouse");
+        }
       }
     }
     /* Remove a node. */
