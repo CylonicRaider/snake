@@ -3,8 +3,15 @@ var CELLSIZE = 32;
 
 var TURNDIR = {U: "D", D: "U", R: "L", L: "R"};
 
+function rndRange(from, to) {
+  return from + (Math.random() * (to + 1 - from) | 0);
+}
 function rndChoice(array) {
   return array[Math.random() * array.length | 0];
+}
+
+function poseq(pos1, pos2) {
+  return (pos1[0] == pos2[0] && pos1[1] == pos2[1]);
 }
 
 /* Encapsulating a section of a texture atlas along with pre-rendering
@@ -171,7 +178,8 @@ var SPRITESHEET = new SpriteSheet($id("spritesheet"), {
   arrowU: {x: 16, y: 32, s: 16, ds: CELLSIZE},
   arrowR: {base: "arrowU", transform: "rotCW"},
   arrowD: {base: "arrowU", transform: "turn"},
-  arrowL: {base: "arrowU", transform: "rotCCW"}
+  arrowL: {base: "arrowU", transform: "rotCCW"},
+  mouse: {x: 32, y: 0, s: 16, ds: CELLSIZE}
 }, {bodyDU: "bodyUD", bodyLR: "bodyRL", bodyRU: "bodyUR", bodyDR: "bodyRD",
   bodyLD: "bodyDL", bodyUL: "bodyLU"});
 
@@ -188,6 +196,7 @@ function Game(canvas, size) {
   this._direction = null;
   this._snake = [];
   this._grow = 0;
+  this._mouse = null;
   this._context = null;
   this._fullRender = false;
   this._clears = [];
@@ -204,11 +213,12 @@ Game.prototype = {
 
   /* Load the level with given number */
   loadLevel: function(levnum) {
+    this._delayHatch = performance.now() + 2000;
     this._egg = [this.size[0] >> 1, this.size[1] >> 1, null];
     this._direction = rndChoice("URDL");
     this._snake = [];
     this._grow = 5;
-    this._delayHatch = performance.now() + 2000;
+    this._mouse = null;
   },
 
   /* Render the game */
@@ -268,6 +278,15 @@ Game.prototype = {
     }
   },
 
+  /* Check if the given cell is already occupied by something */
+  _freeSpot: function(pos) {
+    if (this._egg && poseq(pos, this._egg)) return false;
+    if (this._mouse && poseq(pos, this._mouse)) return false;
+    for (var i = 0; i < this._snake.length; i++)
+      if (poseq(pos, this._snake[i])) return false;
+    return true;
+  },
+
   /* Update the game state */
   update: function() {
     if (this.status != "running") return;
@@ -278,16 +297,26 @@ Game.prototype = {
       this._markDirty(this._egg, true, "egg");
       this._markDirty(this._egg, false, "arrow" + this._direction);
     }
+    /* Spawn/move mouse. */
+    if (Math.random() < 0.1) {
+      if (this._mouse == null) {
+        var newMouse;
+        do {
+          newMouse = [rndRange(0, this.size[0] - 1),
+                      rndRange(0, this.size[1] - 1)];
+        } while (! this._freeSpot(newMouse));
+        this._mouse = newMouse;
+        this._markDirty(this._mouse, false, "mouse");
+      }
+    }
     /* Remove a node. */
     if (this._grow <= 0) {
       if (this._snake.length < 3)
         return this.die("too short");
-      /* Remove egg if necessary */
+      /* Remove egg if necessary. */
       if (this._egg) {
         var tail = this._snake[this._snake.length - 1];
-        if (tail[0] == this._egg[0] && tail[1] == this._egg[1]) {
-          this._egg = null;
-        }
+        if (poseq(tail, this._egg)) this._egg = null;
       }
       this._markDirty(this._snake.pop(), true);
       var last = this._snake.length - 1;
@@ -314,11 +343,10 @@ Game.prototype = {
         this._snake.splice(0, 0, [newX, newY, this._direction]);
         this._markDirty(this._snake[0], true, this._snakeSprite(0));
         this._markDirty(this._snake[1], true, this._snakeSprite(1));
-        if (this._egg && this._egg[0] == this._snake[1][0] &&
-            this._egg[1] == this._snake[1][1])
+        if (this._egg && poseq(this._egg, this._snake[1]))
           this._markDirty(this._egg, false, "egg");
         for (var i = 1; i < this._snake.length; i++) {
-          if (this._snake[i][0] == newX && this._snake[i][1] == newY) {
+          if (poseq(this._snake[i], this._snake[0])) {
             return this.die("crashed into self");
           }
         }
@@ -327,6 +355,11 @@ Game.prototype = {
           return this.die("crashed into wall");
       }
       this._grow--;
+      /* Eat mouse. */
+      if (this._mouse && poseq(this._mouse, this._snake[0])) {
+        this._mouse = null;
+        this._grow += 5;
+      }
     }
   },
 
