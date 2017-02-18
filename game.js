@@ -183,11 +183,12 @@ function Game(canvas, size) {
   this.size = size;
   this.onevent = null;
   this.status = "idle";
-  this._context = null;
+  this._delayHatch = null;
   this._egg = null;
   this._direction = null;
   this._snake = [];
   this._grow = 0;
+  this._context = null;
   this._fullRender = false;
   this._clears = [];
   this._redraws = [];
@@ -203,10 +204,11 @@ Game.prototype = {
 
   /* Load the level with given number */
   loadLevel: function(levnum) {
-    this._egg = [this.size[0] >> 1, this.size[1] >> 1];
+    this._egg = [this.size[0] >> 1, this.size[1] >> 1, null];
     this._direction = rndChoice("URDL");
     this._snake = [];
     this._grow = 5;
+    this._delayHatch = performance.now() + 2000;
   },
 
   /* Render the game */
@@ -269,6 +271,13 @@ Game.prototype = {
   /* Update the game state */
   update: function() {
     if (this.status != "running") return;
+    var now = performance.now();
+    /* Update egg arrow. */
+    if (this._snake.length == 0 && this._direction != this._egg[2]) {
+      this._egg[2] = this._direction;
+      this._markDirty(this._egg, true, "egg");
+      this._markDirty(this._egg, false, "arrow" + this._direction);
+    }
     /* Remove a node. */
     if (this._grow <= 0) {
       if (this._snake.length < 3)
@@ -286,7 +295,9 @@ Game.prototype = {
       this._grow++;
     }
     /* Add a new node. */
-    if (this._grow >= 0) {
+    if (this._delayHatch != null && now < this._delayHatch) {
+      /* NOP */
+    } else if (this._grow >= 0) {
       if (this._snake.length == 0) {
         /* Hatching */
         this._snake.push([this._egg[0], this._egg[1], this._direction]);
