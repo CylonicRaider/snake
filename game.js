@@ -188,6 +188,7 @@ function Game(canvas, size) {
   this._direction = null;
   this._snake = [];
   this._grow = 0;
+  this._fullRender = false;
   this._clears = [];
   this._redraws = [];
 }
@@ -211,30 +212,21 @@ Game.prototype = {
   /* Render the game */
   render: function(full) {
     var ctx = this._context;
-    if (full) {
+    if (full || this._fullRender) {
       ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this._fullRender = false;
       this._clears = [];
       this._redraws = [];
-      var snake = this._snake, length = this._snake.length - 1;
       /* HACK: Avoid drawing single-segment snake */
-      if (length > 0) {
-        for (var i = length; i >= 0; i--) {
-          var seg = snake[i];
-          if (i == 0) {
-            this._redraws.push([seg[0], seg[1], "head" + seg[2]]);
-          } else if (i == length) {
-            this._redraws.push([seg[0], seg[1], "tail" + seg[2]]);
-          } else {
-            this._redraws.push([seg[0], seg[1],
-              "body" + seg[2] + TURNDIR[snake[i + 1][2]]]);
-          }
+      if (this._snake.length > 1) {
+        for (var i = this._snake.length - 1; i >= 0; i--) {
+          this._markDirty(this._snake[i], false, this._snakeSprite(i));
         }
       }
       if (this._egg) {
-        this._redraws.push([this._egg[0], this._egg[1], "egg"]);
+        this._markDirty(this._egg, false, "egg");
         if (this._snake.length == 0)
-          this._redraws.push([this._egg[0], this._egg[1],
-                             "arrow" + this._direction]);
+          this._markDirty(this._egg, false, "arrow" + this._direction);
       }
     }
     if (this._clears.length) {
@@ -256,6 +248,24 @@ Game.prototype = {
     }
   },
 
+  /* Schedule a cell to be re-rendered */
+  _markDirty: function(cell, clear, draw) {
+    if (clear) this._clears.push([cell[0], cell[1]]);
+    if (draw) this._redraws.push([cell[0], cell[1], draw]);
+  },
+
+  /* Calculate which sprite to use for the given snake segment */
+  _snakeSprite: function(idx) {
+    var seg = this._snake[idx];
+    if (idx == 0) {
+      return "head" + seg[2];
+    } else if (idx == this._snake.length - 1) {
+      return "tail" + seg[2];
+    } else {
+      return "body" + seg[2] + TURNDIR[this._snake[idx + 1][2]];
+    }
+  },
+
   /* Update the game state */
   update: function() {
     if (this.status != "running") return;
@@ -270,7 +280,9 @@ Game.prototype = {
           this._egg = null;
         }
       }
-      this._snake.pop();
+      this._markDirty(this._snake.pop(), true);
+      var last = this._snake.length - 1;
+      this._markDirty(this._snake[last], true, this._snakeSprite(last));
       this._grow++;
     }
     /* Add a new node. */
@@ -289,6 +301,8 @@ Game.prototype = {
         }
         this._snake[0][2] = this._direction;
         this._snake.splice(0, 0, [newX, newY, this._direction]);
+        this._markDirty(this._snake[1], true, this._snakeSprite(1));
+        this._markDirty(this._snake[0], false, this._snakeSprite(0));
         for (var i = 1; i < this._snake.length; i++) {
           if (this._snake[i][0] == newX && this._snake[i][1] == newY) {
             return this.die("crashed into self");
@@ -310,7 +324,7 @@ Game.prototype = {
     this.render(true);
     var int = setInterval(function() {
       this.update();
-      this.render(true);
+      this.render();
       if (this.status != "running" && this.status != "paused")
         clearInterval(int);
     }.bind(this), 100);
@@ -338,6 +352,7 @@ Game.prototype = {
   /* Stop the game */
   die: function(reason) {
     this.status = "dead";
+    this._fullRender = true;
     if (this.onevent)
       this.onevent({type: "status", status: "dead", reason: reason});
   }
