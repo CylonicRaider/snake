@@ -179,7 +179,8 @@ var SPRITESHEET = new SpriteSheet($id("spritesheet"), {
   arrowR: {base: "arrowU", transform: "rotCW"},
   arrowD: {base: "arrowU", transform: "turn"},
   arrowL: {base: "arrowU", transform: "rotCCW"},
-  mouse: {x: 32, y: 0, s: 16, ds: CELLSIZE}
+  mouse: {x: 32, y: 0, s: 16, ds: CELLSIZE},
+  gem: {x: 32, y: 16, s: 16, ds: CELLSIZE}
 }, {bodyDU: "bodyUD", bodyLR: "bodyRL", bodyRU: "bodyUR", bodyDR: "bodyRD",
   bodyLD: "bodyDL", bodyUL: "bodyLU"});
 
@@ -197,6 +198,7 @@ function Game(canvas, size) {
   this._snake = [];
   this._grow = 0;
   this._mouse = null;
+  this._gem = null;
   this._context = null;
   this._fullRender = false;
   this._clears = [];
@@ -219,6 +221,7 @@ Game.prototype = {
     this._snake = [];
     this._grow = 5;
     this._mouse = null;
+    this._gem = null;
   },
 
   /* Render the game */
@@ -282,6 +285,7 @@ Game.prototype = {
   _freeSpot: function(pos) {
     if (this._egg && poseq(pos, this._egg)) return false;
     if (this._mouse && poseq(pos, this._mouse)) return false;
+    if (this._gem && poseq(pos, this._gem)) return false;
     for (var i = 0; i < this._snake.length; i++)
       if (poseq(pos, this._snake[i])) return false;
     return true;
@@ -325,6 +329,16 @@ Game.prototype = {
           this._markDirty(this._mouse, false, "mouse");
         }
       }
+    }
+    /* Spawn gem. */
+    if (Math.random() < 0.03 && this._gem == null) {
+      var newGem;
+      do {
+        newGem = [rndRange(0, this.size[0] - 1),
+                  rndRange(0, this.size[1] - 1)];
+      } while (! this._freeSpot(newGem));
+      this._gem = newGem;
+      this._markDirty(this._gem, false, "gem");
     }
     /* Remove a node. */
     if (this._grow <= 0) {
@@ -372,10 +386,16 @@ Game.prototype = {
           return this.die("crashed into wall");
       }
       this._grow--;
-      /* Eat mouse. */
+      /* Eat mouse or gem. */
       if (this._mouse && poseq(this._mouse, this._snake[0])) {
+        this._markDirty(this._snake[0], true);
         this._mouse = null;
         this._grow += 5;
+      }
+      if (this._gem && poseq(this._gem, this._snake[0])) {
+        this._markDirty(this._snake[0], true);
+        this._gem = null;
+        this._grow -= 5;
       }
     }
   },
