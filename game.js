@@ -301,8 +301,11 @@ Game.prototype = {
         }
         this._snake[0][2] = this._direction;
         this._snake.splice(0, 0, [newX, newY, this._direction]);
+        this._markDirty(this._snake[0], true, this._snakeSprite(0));
         this._markDirty(this._snake[1], true, this._snakeSprite(1));
-        this._markDirty(this._snake[0], false, this._snakeSprite(0));
+        if (this._egg && this._egg[0] == this._snake[1][0] &&
+            this._egg[1] == this._snake[1][1])
+          this._markDirty(this._egg, false, "egg");
         for (var i = 1; i < this._snake.length; i++) {
           if (this._snake[i][0] == newX && this._snake[i][1] == newY) {
             return this.die("crashed into self");
