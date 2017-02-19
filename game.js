@@ -180,7 +180,9 @@ var SPRITESHEET = new SpriteSheet($id("spritesheet"), {
   arrowD: {base: "arrowU", transform: "turn"},
   arrowL: {base: "arrowU", transform: "rotCCW"},
   mouse: {x: 32, y: 0, s: 16, ds: CELLSIZE},
-  gem: {x: 32, y: 16, s: 16, ds: CELLSIZE}
+  gem: {x: 32, y: 16, s: 16, ds: CELLSIZE},
+  potionGreen: {x: 32, y: 32, s: 16, ds: CELLSIZE},
+  potionRed: {x: 32, y: 48, s: 16, ds: CELLSIZE},
 }, {bodyDU: "bodyUD", bodyLR: "bodyRL", bodyRU: "bodyUR", bodyDR: "bodyRD",
   bodyLD: "bodyDL", bodyUL: "bodyLU"});
 
@@ -199,6 +201,8 @@ function Game(canvas, size) {
   this._grow = 0;
   this._mouse = null;
   this._gem = null;
+  this._greenPotion = null;
+  this._redPotion = null;
   this._context = null;
   this._fullRender = false;
   this._clears = [];
@@ -222,6 +226,8 @@ Game.prototype = {
     this._grow = 5;
     this._mouse = null;
     this._gem = null;
+    this._greenPotion = null;
+    this._redPotion = null;
   },
 
   /* Render the game */
@@ -232,8 +238,14 @@ Game.prototype = {
       this._fullRender = false;
       this._clears = [];
       this._redraws = [];
-      if (this._mouse) this._markDirty(this._mouse, false, "mouse");
-      if (this._gem) this._markDirty(this._gem, false, "gem");
+      if (this._mouse)
+        this._markDirty(this._mouse, false, "mouse");
+      if (this._gem)
+        this._markDirty(this._gem, false, "gem");
+      if (this._greenPotion)
+        this._markDirty(this._greenPotion, false, "potionGreen");
+      if (this._redPotion)
+        this._markDirty(this._redPotion, false, "potionRed");
       /* HACK: Avoid drawing single-segment snake */
       if (this._snake.length > 1) {
         for (var i = this._snake.length - 1; i >= 0; i--) {
@@ -295,13 +307,16 @@ Game.prototype = {
 
   /* Return the coordinates of a free cell, or null if none found after
    * some tries */
-  _spawn: function() {
+  _spawn: function(item) {
     var tries = 10;
     for (;;) {
       if (tries-- <= 0) return null;
       var pos = [rndRange(0, this.size[0] - 1),
                  rndRange(0, this.size[1] - 1)];
-      if (this._freeSpot(pos)) return pos;
+      if (this._freeSpot(pos)) {
+        if (item) this._markDirty(pos, false, item);
+        return pos;
+      }
     }
   },
 
@@ -318,9 +333,7 @@ Game.prototype = {
     /* Spawn/move mouse. */
     if (Math.random() < 0.1) {
       if (this._mouse == null) {
-        this._mouse = this._spawn();
-        if (this._mouse)
-          this._markDirty(this._mouse, false, "mouse");
+        this._mouse = this._spawn("mouse");
       } else {
         var newMouse = [this._mouse[0], this._mouse[1]];
         switch (rndChoice("URDL")) {
@@ -340,12 +353,13 @@ Game.prototype = {
         }
       }
     }
-    /* Spawn gem. */
-    if (Math.random() < 0.03 && this._gem == null) {
-      this._gem = this._spawn();
-      if (this._gem)
-        this._markDirty(this._gem, false, "gem");
-    }
+    /* Spawn gem and potions. */
+    if (Math.random() < 0.03 && this._gem == null)
+      this._gem = this._spawn("gem");
+    if (Math.random() < 0.005 && this._greenPotion == null)
+      this._greenPotion = this._spawn("potionGreen");
+    if (Math.random() < 0.005 && this._redPotion == null)
+      this._redPotion = this._spawn("potionRed");
     /* Remove a node. */
     if (this._grow <= 0) {
       if (this._snake.length < 3)
@@ -392,16 +406,24 @@ Game.prototype = {
           return this.die("crashed into wall");
       }
       this._grow--;
-      /* Eat mouse or gem. */
-      if (this._mouse && poseq(this._mouse, this._snake[0])) {
-        this._markDirty(this._snake[0], true);
+      /* Eat items. */
+      var head = this._snake[0];
+      if (this._mouse && poseq(this._mouse, head)) {
+        this._markDirty(head, true);
         this._mouse = null;
         this._grow += 5;
-      }
-      if (this._gem && poseq(this._gem, this._snake[0])) {
-        this._markDirty(this._snake[0], true);
+      } else if (this._gem && poseq(this._gem, head)) {
+        this._markDirty(head, true);
         this._gem = null;
         this._grow -= 5;
+      } else if (this._greenPotion && poseq(this._greenPotion, head)) {
+        this._markDirty(head, true);
+        this._greenPotion = null;
+        /* NYI */
+      } else if (this._redPotion && poseq(this._redPotion, head)) {
+        this._markDirty(head, true);
+        this._redPotion = null;
+        this._grow = 5 - this._snake.length;
       }
     }
   },
