@@ -1,4 +1,6 @@
 
+var HIGHSCORE = null;
+
 function $id(id, parent) {
   return (parent || document).getElementById(id);
 }
@@ -29,6 +31,26 @@ function showNode(node, focus) {
   if (focus != null) focus.focus();
 }
 
+function highscore(newValue) {
+  if (window.localStorage) {
+    if (HIGHSCORE == null) {
+      try {
+        HIGHSCORE = parseInt(localStorage.getItem("snake-highscore"));
+      } catch (e) {
+        HIGHSCORE = 0;
+      }
+    }
+    if (newValue != null && newValue > HIGHSCORE) {
+      HIGHSCORE = newValue;
+      localStorage.setItem("snake-highscore", newValue.toString());
+    }
+  } else {
+    if (HIGHSCORE == null) HIGHSCORE = 0;
+    if (newValue != null && newValue > HIGHSCORE) HIGHSCORE = newValue;
+  }
+  return HIGHSCORE;
+}
+
 function init() {
   var game;
   $listen("start", "click", function() {
@@ -39,7 +61,7 @@ function init() {
         if (event.status == "dead") {
           var explanation = "\u201c" + event.reason + "\u201d";
           $id("death-reason").textContent = explanation;
-          $id("death-score").textContent = game.score;
+          $id("death-score").textContent = game.score + " / " + highscore();
         }
         switch (event.status) {
           case "running": showNode("gamescreen", "game"); break;
@@ -48,6 +70,7 @@ function init() {
         }
       } else if (event.type == "score") {
         $id("score").textContent = event.value;
+        $id("highscore").textContent = highscore(event.value);
       }
     };
     showNode("gamescreen", "game");
