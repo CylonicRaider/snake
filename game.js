@@ -293,6 +293,18 @@ Game.prototype = {
     return true;
   },
 
+  /* Return the coordinates of a free cell, or null if none found after
+   * some tries */
+  _spawn: function() {
+    var tries = 10;
+    for (;;) {
+      if (tries-- <= 0) return null;
+      var pos = [rndRange(0, this.size[0] - 1),
+                 rndRange(0, this.size[1] - 1)];
+      if (this._freeSpot(pos)) return pos;
+    }
+  },
+
   /* Update the game state */
   update: function() {
     if (this.status != "running") return;
@@ -306,13 +318,9 @@ Game.prototype = {
     /* Spawn/move mouse. */
     if (Math.random() < 0.1) {
       if (this._mouse == null) {
-        var newMouse;
-        do {
-          newMouse = [rndRange(0, this.size[0] - 1),
-                      rndRange(0, this.size[1] - 1)];
-        } while (! this._freeSpot(newMouse));
-        this._mouse = newMouse;
-        this._markDirty(this._mouse, false, "mouse");
+        this._mouse = this._spawn();
+        if (this._mouse)
+          this._markDirty(this._mouse, false, "mouse");
       } else {
         var newMouse = [this._mouse[0], this._mouse[1]];
         switch (rndChoice("URDL")) {
@@ -334,13 +342,9 @@ Game.prototype = {
     }
     /* Spawn gem. */
     if (Math.random() < 0.03 && this._gem == null) {
-      var newGem;
-      do {
-        newGem = [rndRange(0, this.size[0] - 1),
-                  rndRange(0, this.size[1] - 1)];
-      } while (! this._freeSpot(newGem));
-      this._gem = newGem;
-      this._markDirty(this._gem, false, "gem");
+      this._gem = this._spawn();
+      if (this._gem)
+        this._markDirty(this._gem, false, "gem");
     }
     /* Remove a node. */
     if (this._grow <= 0) {
