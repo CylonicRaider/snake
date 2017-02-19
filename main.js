@@ -105,6 +105,8 @@ function init() {
     }
   });
   showNode("titlescreen");
+  if (! document.activeElement || document.activeElement == document.body)
+    $id("start").focus();
 }
 
 $listen(window, "load", function() {
