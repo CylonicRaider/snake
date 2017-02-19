@@ -66,10 +66,6 @@ h1 + p, h2 + p {
   display: none;
 }
 
-#game {
-  border: 2px solid black;
-}
-
 #game-header {
   display: flex;
   font-size: 24px;
@@ -79,6 +75,21 @@ h1 + p, h2 + p {
 }
 #game-header .filler {
   flex-grow: 1;
+}
+
+#game {
+  border: 2px solid black;
+}
+#game.torus {
+  animation: border-blink 0.3s cubic-bezier(0.25, 0.0, 0.75, 1.0) infinite
+    alternate;
+}
+#game.soon, #game.torus.soon {
+  animation: border-blink 0.1s steps(2, start) infinite alternate;
+}
+@keyframes border-blink {
+  from { border-color: rgba(0, 0, 0, 1); }
+  to { border-color: rgba(0, 0, 0, 0); }
 }
 
 .over-info {

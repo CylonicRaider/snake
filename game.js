@@ -196,6 +196,7 @@ function Game(canvas, size) {
   this.status = "idle";
   this.score = null;
   this._delayHatch = null;
+  this._torusEnd = null;
   this._egg = null;
   this._direction = null;
   this._snake = [];
@@ -222,6 +223,7 @@ Game.prototype = {
   /* Load the level with given number */
   loadLevel: function(levnum) {
     this._delayHatch = performance.now() + 2000;
+    this._torusEnd = null;
     this._egg = [this.size[0] >> 1, this.size[1] >> 1, null];
     this._direction = rndChoice("URDL");
     this._snake = [];
@@ -334,10 +336,34 @@ Game.prototype = {
       this.onevent({type: "score", old: old, value: this.score});
   },
 
+  /* Update CSS classes of canvas */
+  _setCanvasClass: function(cls, value) {
+    var classes = this.canvas.classList;
+    if (value) {
+      if (! classes.contains(cls)) classes.add(cls);
+    } else {
+      if (classes.contains(cls)) classes.remove(cls);
+    }
+  },
+
   /* Update the game state */
   update: function() {
     if (this.status != "running") return;
     var now = performance.now();
+    /* Update CSS classes. */
+    if (this._torusEnd == null) {
+      /* NOP */
+    } else if (this._torusEnd < now) {
+      this._torusEnd = null;
+      this._setCanvasClass("torus", false);
+      this._setCanvasClass("soon", false);
+    } else if (this._torusEnd - 1000 < now) {
+      this._setCanvasClass("torus", true);
+      this._setCanvasClass("soon", true);
+    } else {
+      this._setCanvasClass("torus", true);
+      this._setCanvasClass("soon", false);
+    }
     /* Update egg arrow. */
     if (this._snake.length == 0 && this._direction != this._egg[2]) {
       this._egg[2] = this._direction;
@@ -392,12 +418,13 @@ Game.prototype = {
     if (this._delayHatch != null && now < this._delayHatch) {
       /* NOP */
     } else if (this._grow >= 0) {
+      this._delayHatch = null;
       if (this._snake.length == 0) {
         /* Hatching */
         this._snake.push([this._egg[0], this._egg[1], this._direction]);
       } else {
         var newX = this._snake[0][0], newY = this._snake[0][1];
-        var t = this.toroidal;
+        var t = (this._torusEnd != null);
         switch (this._direction) {
           case "U": if (--newY < 0 && t) newY += this.size[1]; break;
           case "R": if (++newX >= this.size[0] && t) newX = 0; break;
@@ -435,7 +462,7 @@ Game.prototype = {
       } else if (this._greenPotion && poseq(this._greenPotion, head)) {
         this._markDirty(head, true);
         this._greenPotion = null;
-        /* NYI */
+        this._torusEnd = now + 10000;
         this._score(50);
       } else if (this._redPotion && poseq(this._redPotion, head)) {
         this._markDirty(head, true);
@@ -482,6 +509,8 @@ Game.prototype = {
   /* Stop the game */
   die: function(reason) {
     this.status = "dead";
+    this.canvas.classList.remove("torus");
+    this.canvas.classList.remove("soon");
     this._fullRender = true;
     if (this.onevent)
       this.onevent({type: "status", status: "dead", reason: reason});
