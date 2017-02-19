@@ -35,7 +35,10 @@ function highscore(newValue) {
   if (window.localStorage) {
     if (HIGHSCORE == null) {
       try {
-        HIGHSCORE = parseInt(localStorage.getItem("snake-highscore"));
+        var item = localStorage.getItem("snake-highscore");
+        if (! item) throw "absent";
+        HIGHSCORE = parseInt(item);
+        if (! isFinite(HIGHSCORE)) throw "bad number";
       } catch (e) {
         HIGHSCORE = 0;
       }

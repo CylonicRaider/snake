@@ -303,6 +303,8 @@ Game.prototype = {
   _freeSpot: function(pos) {
     if (this._egg && poseq(pos, this._egg)) return false;
     if (this._mouse && poseq(pos, this._mouse)) return false;
+    if (this._greenPotion && poseq(pos, this._greenPotion)) return false;
+    if (this._redPotion && poseq(pos, this._redPotion)) return false;
     if (this._gem && poseq(pos, this._gem)) return false;
     for (var i = 0; i < this._snake.length; i++)
       if (poseq(pos, this._snake[i])) return false;
