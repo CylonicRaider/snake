@@ -37,8 +37,9 @@ function init() {
     game.onevent = function(event) {
       if (event.type == "status") {
         if (event.status == "dead") {
-          var explanation = "Reason: \u201c" + event.reason + "\u201d.";
+          var explanation = "\u201c" + event.reason + "\u201d";
           $id("death-reason").textContent = explanation;
+          $id("death-score").textContent = game.score;
         }
         switch (event.status) {
           case "running": showNode("gamescreen", "game"); break;
