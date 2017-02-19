@@ -194,6 +194,7 @@ function Game(canvas, size) {
   this.size = size;
   this.onevent = null;
   this.status = "idle";
+  this.score = null;
   this._delayHatch = null;
   this._egg = null;
   this._direction = null;
@@ -215,6 +216,7 @@ Game.prototype = {
     this.canvas.width = this.size[0] * CELLSIZE;
     this.canvas.height = this.size[1] * CELLSIZE;
     this._context = this.canvas.getContext('2d');
+    this._score(0, true);
   },
 
   /* Load the level with given number */
@@ -320,6 +322,18 @@ Game.prototype = {
     }
   },
 
+  /* Update score */
+  _score: function(incr, set) {
+    var old = this.score;
+    if (set) {
+      this.score = incr;
+    } else {
+      this.score += incr;
+    }
+    if (this.onevent)
+      this.onevent({type: "score", old: old, value: this.score});
+  },
+
   /* Update the game state */
   update: function() {
     if (this.status != "running") return;
@@ -412,18 +426,22 @@ Game.prototype = {
         this._markDirty(head, true);
         this._mouse = null;
         this._grow += 5;
+        this._score(5);
       } else if (this._gem && poseq(this._gem, head)) {
         this._markDirty(head, true);
         this._gem = null;
         this._grow -= 5;
+        this._score(10);
       } else if (this._greenPotion && poseq(this._greenPotion, head)) {
         this._markDirty(head, true);
         this._greenPotion = null;
         /* NYI */
+        this._score(50);
       } else if (this._redPotion && poseq(this._redPotion, head)) {
         this._markDirty(head, true);
         this._redPotion = null;
         this._grow = 5 - this._snake.length;
+        this._score(this._snake.length);
       }
     }
   },

@@ -69,3 +69,14 @@ h1 + p, h2 + p {
 #game {
   border: 2px solid black;
 }
+
+#game-header {
+  display: flex;
+  font-size: 24px;
+}
+#game-header b {
+  white-space: pre;
+}
+#game-header .filler {
+  flex-grow: 1;
+}

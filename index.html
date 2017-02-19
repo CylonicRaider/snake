@@ -23,7 +23,13 @@ body { opacity: 0; }
   <button id="start">Start</button>
 </div>
 <div id="gamescreen" class="pane">
-  <canvas id="game" width="0" height="0" tabindex="0"></canvas>
+  <div id="game-wrapper">
+    <div id="game-header">
+      <b>Score: </b> <span id="score">N/A</span>
+      <span class="filler"></span>
+    </div>
+    <canvas id="game" width="0" height="0" tabindex="0"></canvas>
+  </div>
   <div id="pausescreen" class="pane">
     <div class="backdrop">
       <h2>Game paused</h2>

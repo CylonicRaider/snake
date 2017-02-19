@@ -45,11 +45,13 @@ function init() {
           case "paused": showNode("pausescreen", "resume"); break;
           case "dead": showNode("overscreen", "restart"); break;
         }
+      } else if (event.type == "score") {
+        $id("score").textContent = event.value;
       }
     };
+    showNode("gamescreen", "game");
     game.init();
     game.loadLevel(0);
-    showNode("gamescreen", "game");
     game.main();
   });
   $listen("game", "keydown", function(event) {
@@ -73,6 +75,7 @@ function init() {
   });
   $listen("restart", "click", function(event) {
     if (game && game.status == "dead") {
+      game.init();
       game.loadLevel(0);
       game.main();
     }
