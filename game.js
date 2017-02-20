@@ -466,8 +466,14 @@ Game.prototype = {
       /* Eat items. */
       var head = this._snake[0];
       for (var i = 0; i < this._obstacles.length; i++) {
-        if (poseq(head, this._obstacles[i]))
-          return this.die("crashed into obstacle");
+        if (poseq(head, this._obstacles[i])) {
+          if (this._torusEnd == null)
+            return this.die("crashed into obstacle");
+          this._obstacles.splice(i, 1);
+          this._markDirty(head, true);
+          this._score(20);
+          break;
+        }
       }
       if (this._mouse && poseq(this._mouse, head)) {
         this._markDirty(head, true);
