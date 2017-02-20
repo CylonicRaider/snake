@@ -183,7 +183,8 @@ var SPRITESHEET = new SpriteSheet($id("spritesheet"), {
   gem: {x: 32, y: 16, s: 16, ds: CELLSIZE},
   potionGreen: {x: 32, y: 32, s: 16, ds: CELLSIZE},
   potionRed: {x: 32, y: 48, s: 16, ds: CELLSIZE},
-  obstacle: {x: 16, y: 32, s: 16, ds: CELLSIZE}
+  obstacle: {x: 16, y: 32, s: 16, ds: CELLSIZE},
+  obstacleWeak: {x: 16, y: 48, s: 16, ds: CELLSIZE}
 }, {bodyDU: "bodyUD", bodyLR: "bodyRL", bodyRU: "bodyUR", bodyDR: "bodyRD",
   bodyLD: "bodyDL", bodyUL: "bodyLU"});
 
@@ -251,8 +252,9 @@ Game.prototype = {
       this._fullRender = false;
       this._clears = [];
       this._redraws = [];
+      var obs = (this._torusEnd != null) ? "obstacleWeak" : "obstacle";
       for (var i = 0; i < this._obstacles.length; i++) {
-        this._markDirty(this._obstacles[i], false, "obstacle");
+        this._markDirty(this._obstacles[i], false, obs);
       }
       if (this._mouse)
         this._markDirty(this._mouse, false, "mouse");
@@ -373,6 +375,9 @@ Game.prototype = {
       this._torusEnd = null;
       this._setCanvasClass("torus", false);
       this._setCanvasClass("soon", false);
+      for (var i = 0; i < this._obstacles.length; i++) {
+        this._markDirty(this._obstacles[i], true, "obstacle");
+      }
     } else if (this._torusEnd - 1000 < now) {
       this._setCanvasClass("torus", true);
       this._setCanvasClass("soon", true);
@@ -490,6 +495,9 @@ Game.prototype = {
         this._greenPotion = null;
         this._torusEnd = now + 10000;
         this._score(50);
+        for (var i = 0; i < this._obstacles.length; i++) {
+          this._markDirty(this._obstacles[i], true, "obstacleWeak");
+        }
       } else if (this._redPotion && poseq(this._redPotion, head)) {
         this._markDirty(head, true);
         this._redPotion = null;
