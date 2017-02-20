@@ -469,8 +469,8 @@ Game.prototype = {
       } else if (this._redPotion && poseq(this._redPotion, head)) {
         this._markDirty(head, true);
         this._redPotion = null;
+        this._score((this._snake.length + this._grow) * 2);
         this._grow = 5 - this._snake.length;
-        this._score(this._snake.length);
       }
     }
   },
