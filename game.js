@@ -183,6 +183,7 @@ var SPRITESHEET = new SpriteSheet($id("spritesheet"), {
   gem: {x: 32, y: 16, s: 16, ds: CELLSIZE},
   potionGreen: {x: 32, y: 32, s: 16, ds: CELLSIZE},
   potionRed: {x: 32, y: 48, s: 16, ds: CELLSIZE},
+  obstacle: {x: 16, y: 16, s: 16, ds: CELLSIZE}
 }, {bodyDU: "bodyUD", bodyLR: "bodyRL", bodyRU: "bodyUR", bodyDR: "bodyRD",
   bodyLD: "bodyDL", bodyUL: "bodyLU"});
 
@@ -201,6 +202,7 @@ function Game(canvas, size) {
   this._direction = null;
   this._snake = [];
   this._grow = 0;
+  this._obstacles = [];
   this._mouse = null;
   this._gem = null;
   this._greenPotion = null;
@@ -228,10 +230,17 @@ Game.prototype = {
     this._direction = rndChoice("URDL");
     this._snake = [];
     this._grow = 5;
+    this._obstacles = [];
     this._mouse = null;
     this._gem = null;
     this._greenPotion = null;
     this._redPotion = null;
+    var no = (levnum - 1) * 3;
+    for (var i = 0; i < no; i++) {
+      var pos = this._spawn();
+      if (pos != null)
+        this._obstacles.push(pos);
+    }
   },
 
   /* Render the game */
@@ -242,6 +251,9 @@ Game.prototype = {
       this._fullRender = false;
       this._clears = [];
       this._redraws = [];
+      for (var i = 0; i < this._obstacles.length; i++) {
+        this._markDirty(this._obstacles[i], false, "obstacle");
+      }
       if (this._mouse)
         this._markDirty(this._mouse, false, "mouse");
       if (this._gem)
@@ -306,6 +318,8 @@ Game.prototype = {
     if (this._greenPotion && poseq(pos, this._greenPotion)) return false;
     if (this._redPotion && poseq(pos, this._redPotion)) return false;
     if (this._gem && poseq(pos, this._gem)) return false;
+    for (var i = 0; i < this._obstacles.length; i++)
+      if (poseq(pos, this._obstacles[i])) return false;
     for (var i = 0; i < this._snake.length; i++)
       if (poseq(pos, this._snake[i])) return false;
     return true;
@@ -451,6 +465,10 @@ Game.prototype = {
       this._grow--;
       /* Eat items. */
       var head = this._snake[0];
+      for (var i = 0; i < this._obstacles.length; i++) {
+        if (poseq(head, this._obstacles[i]))
+          return this.die("crashed into obstacle");
+      }
       if (this._mouse && poseq(this._mouse, head)) {
         this._markDirty(head, true);
         this._mouse = null;

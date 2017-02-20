@@ -78,7 +78,7 @@ function init() {
     };
     showNode("gamescreen", "game");
     game.init();
-    game.loadLevel(0);
+    game.loadLevel(1);
     game.main();
   });
   $listen("game", "keydown", function(event) {
@@ -103,7 +103,7 @@ function init() {
   $listen("restart", "click", function(event) {
     if (game && game.status == "dead") {
       game.init();
-      game.loadLevel(0);
+      game.loadLevel(1);
       game.main();
     }
   });
