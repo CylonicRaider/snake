@@ -175,7 +175,7 @@ var SPRITESHEET = new SpriteSheet($id("spritesheet"), {
   tailD: {base: "tailU", transform: "turn"},
   tailL: {base: "tailU", transform: "rotCCW"},
   egg: {x: 16, y: 0, s: 16, ds: CELLSIZE},
-  arrowU: {x: 16, y: 32, s: 16, ds: CELLSIZE},
+  arrowU: {x: 16, y: 16, s: 16, ds: CELLSIZE},
   arrowR: {base: "arrowU", transform: "rotCW"},
   arrowD: {base: "arrowU", transform: "turn"},
   arrowL: {base: "arrowU", transform: "rotCCW"},
@@ -183,7 +183,7 @@ var SPRITESHEET = new SpriteSheet($id("spritesheet"), {
   gem: {x: 32, y: 16, s: 16, ds: CELLSIZE},
   potionGreen: {x: 32, y: 32, s: 16, ds: CELLSIZE},
   potionRed: {x: 32, y: 48, s: 16, ds: CELLSIZE},
-  obstacle: {x: 16, y: 16, s: 16, ds: CELLSIZE}
+  obstacle: {x: 16, y: 32, s: 16, ds: CELLSIZE}
 }, {bodyDU: "bodyUD", bodyLR: "bodyRL", bodyRU: "bodyUR", bodyDR: "bodyRD",
   bodyLD: "bodyDL", bodyUL: "bodyLU"});
 

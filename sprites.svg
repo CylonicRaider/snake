@@ -62,19 +62,12 @@
         <path d="M -9,3 A 9,14 0 0,1 9,3 A 9,8 0 0,1 -9,3 Z" fill="#f0f0e0"
               stroke="#c0c0c0" stroke-width="2"/>
     </g>
-    <g id="obstacle" transform="translate(48,48)">
-        <rect x="-11" y="-11" width="22" height="22" fill="#808080"
-              stroke="#404040" stroke-width="2"/>
-    </g>
-    <g id="arrow" transform="translate(48,80)">
+    <g id="arrow" transform="translate(48,48)">
         <path d="M 0,-8 L 4,0 L -4,0 Z"/>
     </g>
-    <g id="leck" transform="translate(48,112)">
-        <g clip-path="url(#leck-clip)" filter="url(#leck-filter)">
-            <rect x="-16" y="-16" width="32" height="32" opacity="0"/>
-            <path d="M -8,10 V -2 H -6 V -4 A 6,6 0 0,1 6,-4 V -2 H 8 V 10 Z
-                  M -4,-2 H 4 V -4 A 4,4 0 0,0 -4,-4 Z"/>
-        </g>
+    <g id="obstacle" transform="translate(48,80)">
+        <rect x="-11" y="-11" width="22" height="22" fill="#808080"
+              stroke="#404040" stroke-width="2"/>
     </g>
     <g id="mouse" transform="translate(80,16)">
         <path d="M -6,1 Q -8.5,-5 -5,-5 Q -1.5,-5 -4,1" fill="#ffc0e0"
@@ -95,6 +88,13 @@
     </g>
     <g id="potion-red" transform="translate(80,112)">
         <use xlink:href="#potion-template" fill="#800000"/>
+    </g>
+    <g id="leck" transform="translate(112,16)">
+        <g clip-path="url(#leck-clip)" filter="url(#leck-filter)">
+            <rect x="-16" y="-16" width="32" height="32" opacity="0"/>
+            <path d="M -8,10 V -2 H -6 V -4 A 6,6 0 0,1 6,-4 V -2 H 8 V 10 Z
+                  M -4,-2 H 4 V -4 A 4,4 0 0,0 -4,-4 Z"/>
+        </g>
     </g>
     <g id="favicon" transform="translate(112,112)">
         <g clip-path="url(#cell-clip)">
