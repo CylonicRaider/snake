@@ -585,6 +585,7 @@ Game.prototype = {
       } else if (this._leck && poseq(this._leck, head)) {
         this._markDirty(head, true, this._snakeSprite(0));
         this._markDirty(this._leck, false, "leck");
+        this._score(100 + this._snake.length + this._grow);
       }
     }
   },
