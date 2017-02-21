@@ -196,6 +196,7 @@ var SPRITESHEET = new SpriteSheet($id("spritesheet"), {
   potionRed: {x: 32, y: 48, s: 16, ds: CELLSIZE},
   obstacle: {x: 16, y: 32, s: 16, ds: CELLSIZE},
   obstacleWeak: {x: 16, y: 48, s: 16, ds: CELLSIZE},
+  leck: {x: 48, y: 0, s: 16, ds: CELLSIZE},
   bodyUH: {base: "bodyUD", cl: {h: CELLSIZE >> 1}},
   bodyRH: {base: "bodyUD", transform: "rotCW",
     cl: {x: CELLSIZE >> 1, w: CELLSIZE >> 1}},
@@ -225,6 +226,7 @@ function Game(canvas, size) {
   this._gem = null;
   this._greenPotion = null;
   this._redPotion = null;
+  this._leck = null;
   this._context = null;
   this._fullRender = false;
   this._clears = [];
@@ -253,6 +255,7 @@ Game.prototype = {
     this._gem = null;
     this._greenPotion = null;
     this._redPotion = null;
+    this._leck = null;
     var no = (levnum - 1) * 3;
     for (var i = 0; i < no; i++) {
       var pos = this._spawn();
@@ -292,6 +295,8 @@ Game.prototype = {
         if (this._snake.length == 0)
           this._markDirty(this._egg, false, "arrow" + this._direction);
       }
+      if (this._leck)
+        this._markDirty(this._leck, false, "leck");
     }
     if (this._clears.length) {
       var queue = this._clears;
@@ -322,7 +327,11 @@ Game.prototype = {
   _snakeSprite: function(idx) {
     var seg = this._snake[idx];
     if (idx == 0) {
-      return "head" + seg[2];
+      if (this._leck && poseq(seg, this._leck)) {
+        return "body" + TURNDIR[seg[2]] + "H";
+      } else {
+        return "head" + seg[2];
+      }
     } else if (idx == this._snake.length - 1) {
       return "tail" + seg[2];
     } else {
@@ -403,7 +412,8 @@ Game.prototype = {
       this._setCanvasClass("soon", false);
     }
     /* Update egg arrow. */
-    if (this._snake.length == 0 && this._direction != this._egg[2]) {
+    if (this._egg && this._snake.length == 0 &&
+        this._direction != this._egg[2]) {
       this._egg[2] = this._direction;
       this._markDirty(this._egg, true, "egg");
       this._markDirty(this._egg, false, "arrow" + this._direction);
@@ -438,9 +448,14 @@ Game.prototype = {
       this._greenPotion = this._spawn("potionGreen");
     if (Math.random() < 0.005 && this._redPotion == null)
       this._redPotion = this._spawn("potionRed");
+    /* Spawn leck */
+    if (! this._egg && Math.random() < 0.001 && this._leck == null)
+      this._leck = this._spawn("leck");
+    var atLeck = (this._leck && this._snake.length > 0 &&
+      poseq(this._leck, this._snake[0]));
     /* Remove a node. */
     if (this._grow <= 0) {
-      if (this._snake.length < 3)
+      if (this._snake.length < 3 && ! atLeck)
         return this.die("too short");
       /* Remove egg if necessary. */
       if (this._egg) {
@@ -449,15 +464,23 @@ Game.prototype = {
       }
       this._markDirty(this._snake.pop(), true);
       var last = this._snake.length - 1;
-      this._markDirty(this._snake[last], true, this._snakeSprite(last));
-      this._grow++;
+      if (last == -1 && atLeck) {
+        this._markDirty(this._leck, true, "leck");
+        return this.die("won");
+      } else {
+        this._markDirty(this._snake[last], true, this._snakeSprite(last));
+        this._grow++;
+      }
     }
     /* Add a new node. */
     if (this._delayHatch != null && now < this._delayHatch) {
       /* NOP */
     } else if (this._grow >= 0) {
       this._delayHatch = null;
-      if (this._snake.length == 0) {
+      if (atLeck) {
+        /* Disappearing */
+        /* NOP */
+      } else if (this._snake.length == 0) {
         /* Hatching */
         this._snake.push([this._egg[0], this._egg[1], this._direction]);
       } else {
@@ -520,6 +543,9 @@ Game.prototype = {
         this._redPotion = null;
         this._score((this._snake.length + this._grow) * 2);
         this._grow = 5 - this._snake.length;
+      } else if (this._leck && poseq(this._leck, head)) {
+        this._markDirty(head, true, this._snakeSprite(0));
+        this._markDirty(this._leck, false, "leck");
       }
     }
   },
