@@ -22,11 +22,11 @@ function showNode(node, focus) {
     next.classList.remove("visible");
     next = next.nextElementSibling;
   }
-  showNode(node.parentNode);
   for (var child = node.firstElementChild; child;
        child = child.nextElementSibling) {
     child.classList.remove("visible");
   }
+  showNode(node.parentNode);
   node.classList.add("visible");
   if (focus != null) focus.focus();
 }
@@ -61,12 +61,15 @@ function init() {
     game = new Game($id("game"), [20, 15]);
     game.onevent = function(event) {
       if (event.type == "status") {
-        if (event.status == "dead") {
+        if (event.status == "banner") {
+          $id("level-no").textContent = event.level || "?";
+        } else if (event.status == "dead") {
           var explanation = "\u201c" + event.reason + "\u201d";
           $id("death-reason").textContent = explanation;
           $id("death-score").textContent = game.score + " / " + highscore();
         }
         switch (event.status) {
+          case "banner": showNode("levelscreen"); break;
           case "running": showNode("gamescreen", "game"); break;
           case "paused": showNode("pausescreen", "resume"); break;
           case "dead": showNode("overscreen", "restart"); break;

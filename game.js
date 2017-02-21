@@ -220,6 +220,7 @@ function Game(canvas, size) {
   this.onevent = null;
   this.status = "idle";
   this.score = null;
+  this._showLevel = null;
   this._delayHatch = null;
   this._torusEnd = null;
   this._egg = null;
@@ -249,7 +250,8 @@ Game.prototype = {
 
   /* Load the level with given number */
   loadLevel: function(levnum) {
-    this._delayHatch = performance.now() + 2000;
+    this._showLevel = performance.now() + 1000;
+    this._delayHatch = this._showLevel + 1000;
     this._torusEnd = null;
     this._egg = [this.size[0] >> 1, this.size[1] >> 1, null];
     this._direction = rndChoice("URDL");
@@ -267,6 +269,10 @@ Game.prototype = {
       if (pos != null)
         this._obstacles.push(pos);
     }
+    this.status = "banner";
+    if (this.onevent)
+      this.onevent({type: "status", status: "banner", reason: "new level",
+        level: levnum});
   },
 
   /* Render the game */
@@ -401,8 +407,20 @@ Game.prototype = {
 
   /* Update the game state */
   update: function() {
-    if (this.status != "running") return;
     var now = performance.now();
+    if (this.status == "banner") {
+      if (now > this._showLevel) {
+        this._showLevel = null;
+        this.status = "running";
+        if (this.onevent)
+          this.onevent({type: "status", status: this.status,
+            reason: "timeout"});
+      } else {
+        return;
+      }
+    } else if (this.status != "running") {
+      return;
+    }
     /* Update CSS classes. */
     if (this._torusEnd == null) {
       /* NOP */
@@ -563,14 +581,12 @@ Game.prototype = {
 
   /* Main game loop */
   main: function() {
-    this.status = "running";
-    if (this.onevent)
-      this.onevent({type: "status", status: "running", reason: "started"});
     this.render(true);
     var int = setInterval(function() {
       this.update();
       this.render();
-      if (this.status != "running" && this.status != "paused")
+      if (this.status != "running" && this.status != "paused" &&
+          this.status != "banner")
         clearInterval(int);
     }.bind(this), 100);
   },
