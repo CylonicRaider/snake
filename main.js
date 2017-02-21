@@ -73,7 +73,8 @@ function init() {
     game.onevent = function(event) {
       if (event.type == "status") {
         if (event.status == "banner") {
-          $id("level-no").textContent = event.level || "?";
+          $id("level").textContent = event.level;
+          $id("level-big").textContent = event.level;
         } else if (event.status == "dead") {
           var explanation = "\u201c" + event.reason + "\u201d";
           $id("death-reason").textContent = explanation;
@@ -132,9 +133,9 @@ function init() {
   if (! document.activeElement || document.activeElement == document.body)
     $id("start").focus();
   if (window.onSnakeEvent) {
-    var w = DEFAULT_SIZE[0] * CELLSIZE + 4;
-    var h = DEFAULT_SIZE[1] * CELLSIZE + 4;
-    window.onSnakeEvent({type: "loaded", winsize: [w, h]});
+    var wr = $id("game-wrapper");
+    window.onSnakeEvent({type: "loaded",
+      winsize: [wr.offsetWidth, wr.offsetHeight]});
   }
 }
 
