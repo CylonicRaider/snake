@@ -32,7 +32,12 @@ body {
 
 .visible {
   opacity: 1;
+  -webkit-animation: fade-in 0.2s;
   animation: fade-in 0.2s;
+}
+@-webkit-keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 @keyframes fade-in {
   from { opacity: 0; }
@@ -90,11 +95,18 @@ h1 + p, h2 + p, h3 + p {
   border: 2px solid black;
 }
 #game.torus {
+  -webkit-animation: border-blink 0.3s cubic-bezier(0.25, 0.0, 0.75, 1.0)
+    infinite alternate;
   animation: border-blink 0.3s cubic-bezier(0.25, 0.0, 0.75, 1.0) infinite
     alternate;
 }
 #game.soon, #game.torus.soon {
+  -webkit-animation: border-blink 0.1s steps(2, start) infinite alternate;
   animation: border-blink 0.1s steps(2, start) infinite alternate;
+}
+@-webkit-keyframes border-blink {
+  from { border-color: rgba(0, 0, 0, 1); }
+  to { border-color: rgba(0, 0, 0, 0); }
 }
 @keyframes border-blink {
   from { border-color: rgba(0, 0, 0, 1); }
