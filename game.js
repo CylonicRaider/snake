@@ -75,7 +75,10 @@ Sprite.prototype = {
  *          Sprite.selection, with the "transform" attribute stored as an
  *          additional property, if any. The "bg" property can be either a
  *          color (starting with a '#' sign) or a sprite name, which is
- *          used as the background for the sprite (for precompositing).
+ *          used as the background for the sprite (for precompositing). A
+ *          "cl" property contains (if present) an {x, y, w, h} rectangle
+ *          which allows clipping the image (and background) during
+ *          precomposition. The coordinates are relative to the sprite.
  *          A "base" property names a description to clone absent properties
  *          from (should not be nested).
  * aliases: An object whose pairs represent alternate names for the same
@@ -107,6 +110,7 @@ SpriteSheet.prototype = {
         if (desc.y == null) desc.y = base.y;
         if (desc.s == null) desc.s = base.s;
         if (desc.ds == null) desc.ds = base.ds;
+        if (desc.cl == null) desc.cl = base.cl;
         if (desc.bg == null) desc.bg = base.bg;
       }
       if (desc.ds == null) desc.ds = desc.s;
@@ -143,6 +147,12 @@ SpriteSheet.prototype = {
     if (! this.sprites[name]) {
       /* Draw background */
       var desc = this.descs[name];
+      if (desc.cl) {
+        ctx.save();
+        ctx.rect(desc._ax + (desc.cl.x || 0), desc._ay + (desc.cl.y || 0),
+                 desc.cl.w || desc.ds, desc.cl.h || desc.ds);
+        ctx.clip();
+      }
       if (/^#/.test(desc.bg)) {
         ctx.fillStyle = desc.bg;
         ctx.fillRect(desc._ax, desc._ay, desc.ds, desc.ds);
@@ -154,6 +164,7 @@ SpriteSheet.prototype = {
         ds: desc.ds}, desc.transform || null);
       sprite.preRender(this._atlas, ctx, desc._ax, desc._ay);
       this.sprites[name] = sprite;
+      if (desc.cl) ctx.restore();
     }
     return this.sprites[name];
   }
