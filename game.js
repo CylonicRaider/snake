@@ -481,13 +481,13 @@ Game.prototype = {
       /* Spawn gem and potions. */
       if (Math.random() < 0.03 && ! this._gem)
         this._gem = this._spawn("gem");
-      if (Math.random() < 0.005 && ! this._greenPotion)
+      if (Math.random() < 0.01 && ! this._greenPotion)
         this._greenPotion = this._spawn("potionGreen");
-      if (Math.random() < 0.005 && ! this._redPotion)
+      if (Math.random() < 0.01 && ! this._redPotion)
         this._redPotion = this._spawn("potionRed");
     }
     /* Spawn leck */
-    if (! this._egg && Math.random() < 0.001 && ! this._leck)
+    if (! this._egg && Math.random() < 0.003 && ! this._leck)
       this._leck = this._spawn("leck");
     var atLeck = (this._leck && this._snake.length > 0 &&
       poseq(this._leck, this._snake[0]));
