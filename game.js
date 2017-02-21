@@ -195,7 +195,13 @@ var SPRITESHEET = new SpriteSheet($id("spritesheet"), {
   potionGreen: {x: 32, y: 32, s: 16, ds: CELLSIZE},
   potionRed: {x: 32, y: 48, s: 16, ds: CELLSIZE},
   obstacle: {x: 16, y: 32, s: 16, ds: CELLSIZE},
-  obstacleWeak: {x: 16, y: 48, s: 16, ds: CELLSIZE}
+  obstacleWeak: {x: 16, y: 48, s: 16, ds: CELLSIZE},
+  bodyUH: {base: "bodyUD", cl: {h: CELLSIZE >> 1}},
+  bodyRH: {base: "bodyUD", transform: "rotCW",
+    cl: {x: CELLSIZE >> 1, w: CELLSIZE >> 1}},
+  bodyDH: {base: "bodyUD", transform: "turn",
+    cl: {y: CELLSIZE >> 1, h: CELLSIZE >> 1}},
+  bodyLH: {base: "bodyUD", transform: "rotCCW", cl: {w: CELLSIZE >> 1}}
 }, {bodyDU: "bodyUD", bodyLR: "bodyRL", bodyRU: "bodyUR", bodyDR: "bodyRD",
   bodyLD: "bodyDL", bodyUL: "bodyLU"});
 
