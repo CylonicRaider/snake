@@ -10,7 +10,11 @@ body {
 }
 
 .pane {
+  display: -webkit-flex;
   display: flex;
+  -webkit-flex-direction: column;
+  -webkit-align-items: center;
+  -webkit-justify-content: center;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -51,14 +55,16 @@ h1 {
   font-variant: small-caps;
   font-size: 2em;
   letter-spacing: 0.05em;
+  white-space: pre;
 }
-
 h2 {
   font-variant: small-caps;
   font-size: 1.5em;
 }
-
-h1 + p, h2 + p {
+h3 {
+  font-size: 1.25em;
+}
+h1 + p, h2 + p, h3 + p {
   font-style: italic;
 }
 
@@ -67,6 +73,7 @@ h1 + p, h2 + p {
 }
 
 #game-header {
+  display: -webkit-flex;
   display: flex;
   font-size: 24px;
 }
@@ -74,6 +81,7 @@ h1 + p, h2 + p {
   white-space: pre;
 }
 #game-header .filler {
+  -webkit-flex-grow: 1;
   flex-grow: 1;
 }
 
