@@ -78,6 +78,7 @@ h1 + p, h2 + p {
 }
 
 #game {
+  /* Keep in sync with main.js event handling. */
   border: 2px solid black;
 }
 #game.torus {

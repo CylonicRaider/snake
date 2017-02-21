@@ -55,6 +55,17 @@ function highscore(newValue) {
 }
 
 function init() {
+  function directSnake(event) {
+    if (! game) return;
+    var gameRect = game.canvas.getBoundingClientRect();
+    // Account for border.
+    var ex = event.clientX - gameRect.left - 2;
+    var ey = event.clientY - gameRect.top - 2;
+    var cx = ex / CELLSIZE, cy = ey / CELLSIZE;
+    if (ex < 0 || ey < 0 || cx >= game.size[0] || cy >= game.size[1])
+      return;
+    game.turnSnakeTo(cx, cy);
+  }
   var game;
   $listen("start", "click", function() {
     SPRITESHEET.compose(CELLSIZE * 8);
@@ -95,6 +106,8 @@ function init() {
       case 37: game.turnSnake("L"); break;
     }
   });
+  $listen("game", "mousedown", directSnake);
+  $listen("game", "touchdown", directSnake);
   $listen("game", "blur", function(event) {
     if (game && game.status == "running") game.pause(true);
   });

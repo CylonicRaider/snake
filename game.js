@@ -636,6 +636,27 @@ Game.prototype = {
     }
   },
 
+  /* Touch controls */
+  turnSnakeTo: function(x, y) {
+    if (this._snake.length == 0) {
+      if (! this._egg) return;
+      var dx = x - this._egg[0], dy = y - this._egg[1];
+      if (Math.abs(dx) >= Math.abs(dy)) {
+        this.turnSnake((dx >= 0) ? "R" : "L");
+      } else {
+        this.turnSnake((dy >= 0) ? "D" : "U");
+      }
+      return;
+    }
+    var head = this._snake[0];
+    var dx = x - head[0] - 0.5, dy = y - head[1] - 0.5;
+    if (this._direction == "U" || this._direction == "D") {
+      this.turnSnake((dx >= 0) ? "R" : "L");
+    } else {
+      this.turnSnake((dy >= 0) ? "D" : "U");
+    }
+  },
+
   /* Pause or unpause game */
   pause: function(state) {
     if (state == null) state = (this.status != "paused");
