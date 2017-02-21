@@ -226,6 +226,7 @@ function Game(canvas, size) {
   this._torusEnd = null;
   this._egg = null;
   this._direction = null;
+  this._nextDir = null;
   this._snake = [];
   this._grow = 0;
   this._disappearing = false;
@@ -262,6 +263,7 @@ Game.prototype = {
       this._egg = this._spawn().concat([null]);
     }
     this._direction = rndChoice("URDL");
+    this._nextDir = null;
     this._snake = [];
     this._grow = 5;
     this._disappearing = false;
@@ -552,6 +554,10 @@ Game.prototype = {
           if (poseq(this._snake[i], this._snake[0])) {
             return this.die("crashed into self");
           }
+          if (this._nextDir) {
+            this._direction = this._nextDir;
+            this._nextDir = null;
+          }
         }
         if (newX < 0 || newX >= this.size[0] || newY < 0 ||
             newY >= this.size[1])
@@ -617,9 +623,17 @@ Game.prototype = {
 
   /* Controls */
   turnSnake: function(dir) {
-    if (! TURNDIR.hasOwnProperty(dir)) return;
-    if (this._snake.length && dir == TURNDIR[this._snake[0][2]]) return;
-    this._direction = dir;
+    if (! TURNDIR.hasOwnProperty(dir)){
+      return;
+    } else if (! this._snake.length) {
+      this._direction = dir;
+      return;
+    } else if (this._direction != this._snake[0][2] &&
+        dir != TURNDIR[this._direction]) {
+      this._nextDir = dir;
+    } else if (dir != TURNDIR[this._direction]) {
+      this._direction = dir;
+    }
   },
 
   /* Pause or unpause game */
