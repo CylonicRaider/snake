@@ -132,11 +132,8 @@ function init() {
   showNode("titlescreen");
   if (! document.activeElement || document.activeElement == document.body)
     $id("start").focus();
-  if (window.onSnakeEvent) {
-    var wr = $id("game-wrapper");
-    window.onSnakeEvent({type: "loaded",
-      winsize: [wr.offsetWidth, wr.offsetHeight]});
-  }
+  var wr = $id("game-wrapper");
+  window._snakeLoaded = {winsize: [wr.offsetWidth, wr.offsetHeight]};
 }
 
 $listen(window, "load", function() {
