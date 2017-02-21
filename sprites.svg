@@ -29,8 +29,16 @@
                             result="blurred"/>
             <feComposite in="blurred" in2="blurred" operator="arithmetic"
                          k1="-1" k2="2" result="amplified"/>
+            <feComponentTransfer in="SourceGraphic" result="white">
+                <feFuncR type="discrete" tableValues="1"/>
+                <feFuncG type="discrete" tableValues="1"/>
+                <feFuncB type="discrete" tableValues="1"/>
+            </feComponentTransfer>
+            <feBlend in="white" in2="amplified"/>
+            <!-- Uncomment for transparent leck.
             <feComposite in="SourceGraphic" in2="amplified"
                          operator="arithmetic" k1="-1" k3="1"/>
+            -->
         </filter>
     </defs>
     <g id="snake" fill="#80ff80" stroke="#008000" stroke-width="2">
