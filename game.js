@@ -427,36 +427,38 @@ Game.prototype = {
       this._markDirty(this._egg, true, "egg");
       this._markDirty(this._egg, false, "arrow" + this._direction);
     }
-    /* Spawn/move mouse. */
-    if (Math.random() < 0.1) {
-      if (this._mouse == null) {
-        this._mouse = this._spawn("mouse");
-      } else {
-        var newMouse = [this._mouse[0], this._mouse[1]];
-        switch (rndChoice("URDL")) {
-          case "U": newMouse[1]--; break;
-          case "R": newMouse[0]++; break;
-          case "D": newMouse[1]++; break;
-          case "L": newMouse[0]--; break;
-        }
-        if (newMouse[0] < 0 || newMouse[0] >= this.size[0] ||
-            newMouse[1] < 0 || newMouse[1] >= this.size[1]) {
-          this._markDirty(this._mouse, true);
-          this._mouse = null;
-        } else if (this._freeSpot(newMouse)) {
-          this._markDirty(this._mouse, true);
-          this._mouse = newMouse;
-          this._markDirty(this._mouse, false, "mouse");
+    if (! this._leck) {
+      /* Spawn/move mouse. */
+      if (Math.random() < 0.1) {
+        if (this._mouse == null) {
+          this._mouse = this._spawn("mouse");
+        } else {
+          var newMouse = [this._mouse[0], this._mouse[1]];
+          switch (rndChoice("URDL")) {
+            case "U": newMouse[1]--; break;
+            case "R": newMouse[0]++; break;
+            case "D": newMouse[1]++; break;
+            case "L": newMouse[0]--; break;
+          }
+          if (newMouse[0] < 0 || newMouse[0] >= this.size[0] ||
+              newMouse[1] < 0 || newMouse[1] >= this.size[1]) {
+            this._markDirty(this._mouse, true);
+            this._mouse = null;
+          } else if (this._freeSpot(newMouse)) {
+            this._markDirty(this._mouse, true);
+            this._mouse = newMouse;
+            this._markDirty(this._mouse, false, "mouse");
+          }
         }
       }
+      /* Spawn gem and potions. */
+      if (Math.random() < 0.03 && this._gem == null)
+        this._gem = this._spawn("gem");
+      if (Math.random() < 0.005 && this._greenPotion == null)
+        this._greenPotion = this._spawn("potionGreen");
+      if (Math.random() < 0.005 && this._redPotion == null)
+        this._redPotion = this._spawn("potionRed");
     }
-    /* Spawn gem and potions. */
-    if (Math.random() < 0.03 && this._gem == null)
-      this._gem = this._spawn("gem");
-    if (Math.random() < 0.005 && this._greenPotion == null)
-      this._greenPotion = this._spawn("potionGreen");
-    if (Math.random() < 0.005 && this._redPotion == null)
-      this._redPotion = this._spawn("potionRed");
     /* Spawn leck */
     if (! this._egg && Math.random() < 0.001 && this._leck == null)
       this._leck = this._spawn("leck");
