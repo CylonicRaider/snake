@@ -66,6 +66,7 @@ function init() {
         } else if (event.status == "dead") {
           var explanation = "\u201c" + event.reason + "\u201d";
           $id("death-reason").textContent = explanation;
+          $id("death-level").textContent = game.level;
           $id("death-score").textContent = game.score + " / " + highscore();
         }
         switch (event.status) {

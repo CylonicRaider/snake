@@ -219,6 +219,7 @@ function Game(canvas, size) {
   this.size = size;
   this.onevent = null;
   this.status = "idle";
+  this.level = null;
   this.score = null;
   this._showLevel = null;
   this._delayHatch = null;
@@ -270,6 +271,7 @@ Game.prototype = {
         this._obstacles.push(pos);
     }
     this.status = "banner";
+    this.level = levnum;
     if (this.onevent)
       this.onevent({type: "status", status: "banner", reason: "new level",
         level: levnum});
@@ -495,7 +497,8 @@ Game.prototype = {
       var last = this._snake.length - 1;
       if (last == -1 && atLeck) {
         this._markDirty(this._leck, true, "leck");
-        return this.die("won");
+        this.loadLevel(this.level + 1);
+        return;
       } else {
         this._markDirty(this._snake[last], true, this._snakeSprite(last));
         this._grow++;
