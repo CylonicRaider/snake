@@ -69,7 +69,7 @@ function init() {
   var game;
   $listen("start", "click", function() {
     SPRITESHEET.compose(CELLSIZE * 8);
-    game = new Game($id("game"), [20, 15]);
+    game = new Game($id("game"), DEFAULT_SIZE);
     game.onevent = function(event) {
       if (event.type == "status") {
         if (event.status == "banner") {
@@ -79,6 +79,10 @@ function init() {
           $id("death-reason").textContent = explanation;
           $id("death-level").textContent = game.level;
           $id("death-score").textContent = game.score + " / " + highscore();
+          if (window.onSnakeEvent)
+            window.onSnakeEvent({type: "gameover", game: game,
+              score: game.score, level: game.level,
+              highscore: HIGHSCORE});
         }
         switch (event.status) {
           case "banner": showNode("levelscreen"); break;
@@ -127,6 +131,11 @@ function init() {
   showNode("titlescreen");
   if (! document.activeElement || document.activeElement == document.body)
     $id("start").focus();
+  if (window.onSnakeEvent) {
+    var w = DEFAULT_SIZE[0] * CELLSIZE + 4;
+    var h = DEFAULT_SIZE[1] * CELLSIZE + 4;
+    window.onSnakeEvent({type: "loaded", winsize: [w, h]});
+  }
 }
 
 $listen(window, "load", function() {

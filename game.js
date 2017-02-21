@@ -1,5 +1,6 @@
 
 var CELLSIZE = 32;
+var DEFAULT_SIZE = [20, 15];
 
 var TURNDIR = {U: "D", D: "U", R: "L", L: "R"};
 
