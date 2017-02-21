@@ -228,7 +228,9 @@ function Game(canvas, size) {
   this._direction = null;
   this._snake = [];
   this._grow = 0;
+  this._disappearing = false;
   this._obstacles = [];
+  this._obstaclesStrong = true;
   this._mouse = null;
   this._gem = null;
   this._greenPotion = null;
@@ -262,7 +264,9 @@ Game.prototype = {
     this._direction = rndChoice("URDL");
     this._snake = [];
     this._grow = 5;
+    this._disappearing = false;
     this._obstacles = [];
+    this._obstaclesStrong = true;
     this._mouse = null;
     this._gem = null;
     this._greenPotion = null;
@@ -292,7 +296,7 @@ Game.prototype = {
       this._fullRender = false;
       this._clears = [];
       this._redraws = [];
-      var obs = (this._torusEnd != null) ? "obstacleWeak" : "obstacle";
+      var obs = (this._obstaclesStrong) ? "obstacle" : "obstacleWeak";
       for (var i = 0; i < this._obstacles.length; i++) {
         this._markDirty(this._obstacles[i], false, obs);
       }
@@ -347,7 +351,7 @@ Game.prototype = {
   _snakeSprite: function(idx) {
     var seg = this._snake[idx];
     if (idx == 0) {
-      if (this._leck && poseq(seg, this._leck)) {
+      if (this._disappearing) {
         if (idx == this._snake.length - 1) {
           return "tail" + TURNDIR[seg[2]] + "H";
         } else {
@@ -389,6 +393,15 @@ Game.prototype = {
         if (item) this._markDirty(pos, false, item);
         return pos;
       }
+    }
+  },
+
+  /* Make obstacles "strong" or "weak" */
+  _strengthenObstacles: function(strong) {
+    this._obstaclesStrong = strong;
+    var obs = (strong) ? "obstacle" : "obstacleWeak";
+    for (var i = 0; i < this._obstacles.length; i++) {
+      this._markDirty(this._obstacles[i], true, obs);
     }
   },
 
@@ -437,9 +450,7 @@ Game.prototype = {
       this._torusEnd = null;
       this._setCanvasClass("torus", false);
       this._setCanvasClass("soon", false);
-      for (var i = 0; i < this._obstacles.length; i++) {
-        this._markDirty(this._obstacles[i], true, "obstacle");
-      }
+      this._strengthenObstacles(true);
     } else if (this._torusEnd - 1000 < now) {
       this._setCanvasClass("torus", true);
       this._setCanvasClass("soon", true);
@@ -551,10 +562,11 @@ Game.prototype = {
       var head = this._snake[0];
       for (var i = 0; i < this._obstacles.length; i++) {
         if (poseq(head, this._obstacles[i])) {
-          if (this._torusEnd == null)
+          if (this._obstaclesStrong)
             return this.die("crashed into obstacle");
           this._obstacles.splice(i, 1);
           this._markDirty(head, true);
+          this._strengthenObstacles(true);
           this._score(20);
           break;
         }
@@ -574,18 +586,19 @@ Game.prototype = {
         this._greenPotion = null;
         this._torusEnd = now + 10000;
         this._score(50);
-        for (var i = 0; i < this._obstacles.length; i++) {
-          this._markDirty(this._obstacles[i], true, "obstacleWeak");
-        }
+        this._strengthenObstacles(false);
       } else if (this._redPotion && poseq(this._redPotion, head)) {
         this._markDirty(head, true);
         this._redPotion = null;
         this._score((this._snake.length + this._grow) * 2);
         this._grow = 5 - this._snake.length;
       } else if (this._leck && poseq(this._leck, head)) {
+        if (! this._disappearing) {
+          this._disappearing = true;
+          this._score(100 + this._snake.length + this._grow);
+        }
         this._markDirty(head, true, this._snakeSprite(0));
         this._markDirty(this._leck, false, "leck");
-        this._score(100 + this._snake.length + this._grow);
       }
     }
   },
