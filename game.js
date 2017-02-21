@@ -430,7 +430,7 @@ Game.prototype = {
     if (! this._leck) {
       /* Spawn/move mouse. */
       if (Math.random() < 0.1) {
-        if (this._mouse == null) {
+        if (! this._mouse) {
           this._mouse = this._spawn("mouse");
         } else {
           var newMouse = [this._mouse[0], this._mouse[1]];
@@ -452,15 +452,15 @@ Game.prototype = {
         }
       }
       /* Spawn gem and potions. */
-      if (Math.random() < 0.03 && this._gem == null)
+      if (Math.random() < 0.03 && ! this._gem)
         this._gem = this._spawn("gem");
-      if (Math.random() < 0.005 && this._greenPotion == null)
+      if (Math.random() < 0.005 && ! this._greenPotion)
         this._greenPotion = this._spawn("potionGreen");
-      if (Math.random() < 0.005 && this._redPotion == null)
+      if (Math.random() < 0.005 && ! this._redPotion)
         this._redPotion = this._spawn("potionRed");
     }
     /* Spawn leck */
-    if (! this._egg && Math.random() < 0.001 && this._leck == null)
+    if (! this._egg && Math.random() < 0.001 && ! this._leck)
       this._leck = this._spawn("leck");
     var atLeck = (this._leck && this._snake.length > 0 &&
       poseq(this._leck, this._snake[0]));
