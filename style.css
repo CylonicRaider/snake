@@ -6,7 +6,8 @@
 
 body {
   font-family: serif;
-  font-size: 5vh;
+  font-size: 40px;
+  line-height: 1;
 }
 
 .pane {
