@@ -135,8 +135,7 @@ function init() {
 }
 
 function windowSize() {
-  var wr = $id("game-wrapper");
-  return [wr.offsetWidth, wr.offsetHeight];
+  return [DEFAULT_SIZE[0] * CELLSIZE + 4, DEFAULT_SIZE[1] * CELLSIZE + 32];
 }
 
 $listen(window, "load", function() {
