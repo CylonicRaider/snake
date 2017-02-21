@@ -203,12 +203,11 @@ var SPRITESHEET = new SpriteSheet($id("spritesheet"), {
   bodyDH: {base: "bodyUD", transform: "turn",
     cl: {y: CELLSIZE >> 1, h: CELLSIZE >> 1}},
   bodyLH: {base: "bodyUD", transform: "rotCCW", cl: {w: CELLSIZE >> 1}},
-  tailUH: {base: "tailU", cl: {h: CELLSIZE >> 1}},
-  tailRH: {base: "tailU", transform: "rotCW",
-    cl: {x: CELLSIZE >> 1, h: CELLSIZE >> 1}},
-  tailDH: {base: "tailU", transform: "turn",
-    cl: {y: CELLSIZE >> 1, h: CELLSIZE >> 1}},
-  tailLH: {base: "tailU", transform: "rotCCW", cl: {w: CELLSIZE >> 1}}
+  tailUH: {base: "tailU", transform: "turn", cl: {h: CELLSIZE >> 1}},
+  tailRH: {base: "tailU", transform: "rotCCW",
+    cl: {x: CELLSIZE >> 1, w: CELLSIZE >> 1}},
+  tailDH: {base: "tailU", cl: {y: CELLSIZE >> 1, h: CELLSIZE >> 1}},
+  tailLH: {base: "tailU", transform: "rotCW", cl: {w: CELLSIZE >> 1}}
 }, {bodyDU: "bodyUD", bodyLR: "bodyRL", bodyRU: "bodyUR", bodyDR: "bodyRD",
   bodyLD: "bodyDL", bodyUL: "bodyLU"});
 
@@ -334,7 +333,7 @@ Game.prototype = {
     var seg = this._snake[idx];
     if (idx == 0) {
       if (this._leck && poseq(seg, this._leck)) {
-        if (this._snake.length == 1) {
+        if (idx == this._snake.length - 1) {
           return "tail" + TURNDIR[seg[2]] + "H";
         } else {
           return "body" + TURNDIR[seg[2]] + "H";
