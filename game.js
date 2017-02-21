@@ -254,7 +254,11 @@ Game.prototype = {
     this._showLevel = performance.now() + 1000;
     this._delayHatch = this._showLevel + 1000;
     this._torusEnd = null;
-    this._egg = [this.size[0] >> 1, this.size[1] >> 1, null];
+    if (levnum == 1) {
+      this._egg = [this.size[0] >> 1, this.size[1] >> 1, null];
+    } else {
+      this._egg = this._spawn().concat([null]);
+    }
     this._direction = rndChoice("URDL");
     this._snake = [];
     this._grow = 5;
@@ -272,6 +276,9 @@ Game.prototype = {
     }
     this.status = "banner";
     this.level = levnum;
+    this._fullRender = true;
+    this._setCanvasClass("torus", false);
+    this._setCanvasClass("soon", false);
     if (this.onevent)
       this.onevent({type: "status", status: "banner", reason: "new level",
         level: levnum});
