@@ -101,6 +101,7 @@
         <use xlink:href="#potion-template" fill="#800000"/>
     </g>
     <g id="leck" transform="translate(112,16)">
+        <path d="M -5,-2 H 5 V -4 A 5,5 0 0,0 -5,-4 Z" fill="white"/>
         <g clip-path="url(#leck-clip)" filter="url(#leck-filter)">
             <rect x="-16" y="-16" width="32" height="32" opacity="0"/>
             <path d="M -8,10 V -2 H -6 V -4 A 6,6 0 0,1 6,-4 V -2 H 8 V 10 Z
