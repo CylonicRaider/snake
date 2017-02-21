@@ -618,6 +618,8 @@ Game.prototype = {
       if (this.status != "running" && this.status != "paused" &&
           this.status != "banner")
         clearInterval(int);
+      if (this.onevent)
+        this.onevent({type: "update"});
     }.bind(this), 100);
   },
 
