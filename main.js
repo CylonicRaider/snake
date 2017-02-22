@@ -66,7 +66,7 @@ function init() {
       return;
     game.turnSnakeTo(cx, cy);
   }
-  var game;
+  var game = null;
   $listen("start", "click", function() {
     SPRITESHEET.compose(CELLSIZE * 8);
     game = new Game($id("game"), DEFAULT_SIZE);
@@ -92,7 +92,7 @@ function init() {
           case "dead": showNode("overscreen", "restart"); break;
         }
       } else if (event.type == "score") {
-        $id("score").textContent = event.value;
+        //$id("score").textContent = event.value;
         $id("highscore").textContent = highscore(event.value);
       }
     };
@@ -130,6 +130,21 @@ function init() {
       game.main();
     }
   });
+  var score = null, scoreIncr = 1;
+  setInterval(function() {
+    if (! game || game.state == "paused" || game.score == score) return;
+    if (score == null) score = 0;
+    if (game.score < score) {
+      score = game.score;
+      scoreIncr = 1;
+    } else if (scoreIncr > game.score - score) {
+      score = game.score;
+      scoreIncr = 1;
+    } else {
+      score += scoreIncr++;
+    }
+    $id("score").textContent = score;
+  }, 30);
   showNode("titlescreen");
   if (! document.activeElement || document.activeElement == document.body)
     $id("start").focus();
