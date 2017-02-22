@@ -508,7 +508,7 @@ Game.prototype = {
     /* Remove a node. */
     if (this._grow <= 0) {
       if (this._snake.length < 3 && ! atLeck)
-        return this.die("too short");
+        return this.die("got too short");
       /* Remove egg if necessary. */
       if (this._egg) {
         var tail = this._snake[this._snake.length - 1];
