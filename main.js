@@ -104,6 +104,7 @@ function init() {
   $listen("game", "keydown", function(event) {
     if (! game) return;
     switch (event.keyCode) {
+      case 19: game.pause(); break;
       case 27: game.die("player quit"); break;
       case 38: game.turnSnake("U"); break;
       case 39: game.turnSnake("R"); break;
