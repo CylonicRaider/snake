@@ -83,7 +83,7 @@ function init() {
           if (window.onSnakeEvent)
             window.onSnakeEvent({type: "gameover", game: game,
               score: game.score, level: game.level,
-              highscore: HIGHSCORE});
+              reason: event.reason, highscore: HIGHSCORE});
         }
         switch (event.status) {
           case "banner": showNode("levelscreen"); break;
