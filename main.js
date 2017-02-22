@@ -135,7 +135,7 @@ function init() {
 }
 
 function windowSize() {
-  return [DEFAULT_SIZE[0] * CELLSIZE + 4, DEFAULT_SIZE[1] * CELLSIZE + 32];
+  return [DEFAULT_SIZE[0] * CELLSIZE + 6, DEFAULT_SIZE[1] * CELLSIZE + 30];
 }
 
 $listen(window, "load", function() {

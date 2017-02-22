@@ -82,6 +82,7 @@ h1 + p, h2 + p, h3 + p {
   display: -webkit-flex;
   display: flex;
   font-size: 24px;
+  margin: -1px 0 1px;
 }
 #game-header b {
   white-space: pre;
@@ -94,10 +95,14 @@ h1 + p, h2 + p, h3 + p {
   flex-grow: 1;
 }
 
+#game-wrapper {
+  padding: 1px;
+}
+
 #game {
+  display: block;
   /* Keep in sync with main.js event handling. */
   border: 2px solid black;
-  display: block;
 }
 #game.torus {
   -webkit-animation: border-blink 0.3s cubic-bezier(0.25, 0.0, 0.75, 1.0)
