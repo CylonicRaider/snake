@@ -220,30 +220,11 @@ function Game(canvas, size) {
   this.canvas = canvas;
   this.size = size;
   this.onevent = null;
-  this.status = "idle";
-  this.level = null;
-  this.score = null;
-  this._showLevel = null;
-  this._delayHatch = null;
-  this._torusEnd = null;
-  this._delayLeck = null;
-  this._egg = null;
-  this._direction = null;
-  this._nextDir = null;
-  this._snake = [];
-  this._grow = 0;
-  this._disappearing = false;
-  this._obstacles = [];
-  this._obstaclesStrong = true;
-  this._mouse = null;
-  this._gem = null;
-  this._greenPotion = null;
-  this._redPotion = null;
-  this._leck = null;
   this._context = null;
   this._fullRender = false;
   this._clears = [];
   this._redraws = [];
+  this.reset(true);
 }
 
 Game.prototype = {
@@ -255,8 +236,35 @@ Game.prototype = {
     this._score(0, true);
   },
 
+  /* Reset the game's attributes */
+  reset: function(full) {
+    if (full) {
+      this.level = null;
+      this.score = null;
+    }
+    this.status = "idle";
+    this._showLevel = null;
+    this._delayHatch = null;
+    this._torusEnd = null;
+    this._delayLeck = null;
+    this._egg = null;
+    this._direction = null;
+    this._nextDir = null;
+    this._snake = [];
+    this._grow = 0;
+    this._disappearing = false;
+    this._obstacles = [];
+    this._obstaclesStrong = true;
+    this._mouse = null;
+    this._gem = null;
+    this._greenPotion = null;
+    this._redPotion = null;
+    this._leck = null;
+  },
+
   /* Load the level with given number */
   loadLevel: function(levnum) {
+    this.reset(false);
     this._showLevel = performance.now() + 1000;
     this._delayHatch = this._showLevel + 1000;
     this._torusEnd = null;
@@ -267,17 +275,7 @@ Game.prototype = {
       this._egg = this._spawn().concat([null]);
     }
     this._direction = rndChoice("URDL");
-    this._nextDir = null;
-    this._snake = [];
     this._grow = 5;
-    this._disappearing = false;
-    this._obstacles = [];
-    this._obstaclesStrong = true;
-    this._mouse = null;
-    this._gem = null;
-    this._greenPotion = null;
-    this._redPotion = null;
-    this._leck = null;
     var no = (levnum - 1) * 3;
     for (var i = 0; i < no; i++) {
       var pos = this._spawn();
