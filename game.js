@@ -246,6 +246,7 @@ Game.prototype = {
     this._showLevel = null;
     this._delayHatch = null;
     this._torusEnd = null;
+    this._obstacleEnd = null;
     this._delayLeck = null;
     this._egg = null;
     this._direction = null;
@@ -258,6 +259,7 @@ Game.prototype = {
     this._mouse = null;
     this._gem = null;
     this._greenPotion = null;
+    this._yellowPotion = null;
     this._redPotion = null;
     this._leck = null;
   },
@@ -268,6 +270,7 @@ Game.prototype = {
     this._showLevel = performance.now() + 1000;
     this._delayHatch = this._showLevel + 1000;
     this._torusEnd = null;
+    this._obstacleEnd = null;
     this._delayLeck = this._showLevel + 29000;
     if (levnum == 1) {
       this._egg = [this.size[0] >> 1, this.size[1] >> 1, null];
@@ -310,6 +313,8 @@ Game.prototype = {
         this._markDirty(this._gem, false, "gem");
       if (this._greenPotion)
         this._markDirty(this._greenPotion, false, "potionGreen");
+      if (this._yellowPotion)
+        this._markDirty(this._yellowPotion, false, "potionYellow");
       if (this._redPotion)
         this._markDirty(this._redPotion, false, "potionRed");
       /* HACK: Avoid drawing single-segment snake */
@@ -376,6 +381,7 @@ Game.prototype = {
     if (this._egg && poseq(pos, this._egg)) return false;
     if (this._mouse && poseq(pos, this._mouse)) return false;
     if (this._greenPotion && poseq(pos, this._greenPotion)) return false;
+    if (this._yellowPotion && poseq(pos, this._yellowPotion)) return false;
     if (this._redPotion && poseq(pos, this._redPotion)) return false;
     if (this._gem && poseq(pos, this._gem)) return false;
     for (var i = 0; i < this._obstacles.length; i++)
@@ -447,20 +453,23 @@ Game.prototype = {
     } else if (this.status != "running") {
       return;
     }
-    /* Update CSS classes. */
+    /* Update CSS classes and other timers. */
     if (this._torusEnd == null) {
       /* NOP */
     } else if (this._torusEnd < now) {
       this._torusEnd = null;
       this._setCanvasClass("torus", false);
       this._setCanvasClass("soon", false);
-      this._strengthenObstacles(true);
     } else if (this._torusEnd - 1000 < now) {
       this._setCanvasClass("torus", true);
       this._setCanvasClass("soon", true);
     } else {
       this._setCanvasClass("torus", true);
       this._setCanvasClass("soon", false);
+    }
+    if (this._obstacleEnd && this._obstacleEnd < now) {
+      this._obstacleEnd = null;
+      this._strengthenObstacles(true);
     }
     /* Update egg arrow. */
     if (this._egg && this._snake.length == 0 &&
@@ -474,6 +483,10 @@ Game.prototype = {
       if (this._greenPotion && this._greenPotion[2] < now) {
         this._markDirty(this._greenPotion, true);
         this._greenPotion = null;
+      }
+      if (this._yellowPotion && this._yellowPotion[2] < now) {
+        this._markDirty(this._yellowPotion, true);
+        this._yellowPotion = null;
       }
       if (this._redPotion && this._redPotion[2] < now) {
         this._markDirty(this._redPotion, true);
@@ -503,12 +516,15 @@ Game.prototype = {
         }
       }
       /* Spawn gem and potions. */
+      var expire = [now + 10000];
       if (Math.random() < 0.03 && ! this._gem)
         this._gem = this._spawn("gem");
       if (Math.random() < 0.01 && ! this._greenPotion)
-        this._greenPotion = this._spawn("potionGreen").concat([now + 10000]);
+        this._greenPotion = this._spawn("potionGreen").concat(expire);
+      if (Math.random() < 0.01 && ! this._yellowPotion)
+        this._yellowPotion = this._spawn("potionYellow").concat(expire);
       if (Math.random() < 0.01 && ! this._redPotion)
-        this._redPotion = this._spawn("potionRed").concat([now + 10000]);
+        this._redPotion = this._spawn("potionRed").concat(expire);
     }
     /* Spawn leck */
     if (! this._egg && Math.random() < 0.003 && ! this._leck) {
@@ -606,7 +622,12 @@ Game.prototype = {
         this._markDirty(head, true);
         this._greenPotion = null;
         this._torusEnd = now + 10000;
-        this._score(50);
+        this._score(25);
+      } else if (this._yellowPotion && poseq(this._yellowPotion, head)) {
+        this._markDirty(head, true);
+        this._yellowPotion = null;
+        this._obstacleEnd = now + 10000;
+        this._score(25);
         this._strengthenObstacles(false);
       } else if (this._redPotion && poseq(this._redPotion, head)) {
         this._markDirty(head, true);
