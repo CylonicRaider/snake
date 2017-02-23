@@ -471,6 +471,15 @@ Game.prototype = {
       this._markDirty(this._egg, false, "arrow" + this._direction);
     }
     if (! this._leck) {
+      /* Despawn potions */
+      if (this._greenPotion && this._greenPotion[2] < now) {
+        this._markDirty(this._greenPotion, true);
+        this._greenPotion = null;
+      }
+      if (this._redPotion && this._redPotion[2] < now) {
+        this._markDirty(this._redPotion, true);
+        this._redPotion = null;
+      }
       /* Spawn/move mouse. */
       if (Math.random() < 0.1) {
         if (! this._mouse) {
@@ -498,9 +507,9 @@ Game.prototype = {
       if (Math.random() < 0.03 && ! this._gem)
         this._gem = this._spawn("gem");
       if (Math.random() < 0.01 && ! this._greenPotion)
-        this._greenPotion = this._spawn("potionGreen");
+        this._greenPotion = this._spawn("potionGreen").concat([now + 10000]);
       if (Math.random() < 0.01 && ! this._redPotion)
-        this._redPotion = this._spawn("potionRed");
+        this._redPotion = this._spawn("potionRed").concat([now + 10000]);
     }
     /* Spawn leck */
     if (! this._egg && Math.random() < 0.003 && ! this._leck) {
