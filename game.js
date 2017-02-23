@@ -225,6 +225,7 @@ function Game(canvas, size) {
   this._showLevel = null;
   this._delayHatch = null;
   this._torusEnd = null;
+  this._delayLeck = null;
   this._egg = null;
   this._direction = null;
   this._nextDir = null;
@@ -258,6 +259,7 @@ Game.prototype = {
     this._showLevel = performance.now() + 1000;
     this._delayHatch = this._showLevel + 1000;
     this._torusEnd = null;
+    this._delayLeck = this._showLevel + 29000;
     if (levnum == 1) {
       this._egg = [this.size[0] >> 1, this.size[1] >> 1, null];
     } else {
@@ -501,8 +503,12 @@ Game.prototype = {
         this._redPotion = this._spawn("potionRed");
     }
     /* Spawn leck */
-    if (! this._egg && Math.random() < 0.003 && ! this._leck)
-      this._leck = this._spawn("leck");
+    if (! this._egg && Math.random() < 0.003 && ! this._leck) {
+      if (this._delayLeck == null || this._delayLeck < now) {
+        this._delayLeck = null;
+        this._leck = this._spawn("leck");
+      }
+    }
     var atLeck = (this._leck && this._snake.length > 0 &&
       poseq(this._leck, this._snake[0]));
     /* Remove a node. */
