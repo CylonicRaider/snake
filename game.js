@@ -519,15 +519,15 @@ Game.prototype = {
       var expire = [now + 10000];
       if (Math.random() < 0.01 && ! this._gem)
         this._gem = this._spawn("gem");
-      if (Math.random() < 0.002 && ! this._greenPotion)
+      if (Math.random() < 0.005 && ! this._greenPotion)
         this._greenPotion = this._spawn("potionGreen").concat(expire);
-      if (Math.random() < 0.002 && ! this._yellowPotion)
+      if (Math.random() < 0.005 && ! this._yellowPotion)
         this._yellowPotion = this._spawn("potionYellow").concat(expire);
-      if (Math.random() < 0.002 && ! this._redPotion)
+      if (Math.random() < 0.005 && ! this._redPotion)
         this._redPotion = this._spawn("potionRed").concat(expire);
     }
     /* Spawn leck */
-    if (! this._egg && Math.random() < 0.001 && ! this._leck) {
+    if (! this._egg && Math.random() < 0.003 && ! this._leck) {
       if (this._delayLeck == null || this._delayLeck < now) {
         this._delayLeck = null;
         this._leck = this._spawn("leck");
