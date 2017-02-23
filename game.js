@@ -493,7 +493,7 @@ Game.prototype = {
         this._redPotion = null;
       }
       /* Spawn/move mouse. */
-      if (Math.random() < 0.1) {
+      if (Math.random() < 0.2) {
         if (! this._mouse) {
           this._mouse = this._spawn("mouse");
         } else {
@@ -517,17 +517,17 @@ Game.prototype = {
       }
       /* Spawn gem and potions. */
       var expire = [now + 10000];
-      if (Math.random() < 0.03 && ! this._gem)
+      if (Math.random() < 0.01 && ! this._gem)
         this._gem = this._spawn("gem");
-      if (Math.random() < 0.01 && ! this._greenPotion)
+      if (Math.random() < 0.002 && ! this._greenPotion)
         this._greenPotion = this._spawn("potionGreen").concat(expire);
-      if (Math.random() < 0.01 && ! this._yellowPotion)
+      if (Math.random() < 0.002 && ! this._yellowPotion)
         this._yellowPotion = this._spawn("potionYellow").concat(expire);
-      if (Math.random() < 0.01 && ! this._redPotion)
+      if (Math.random() < 0.002 && ! this._redPotion)
         this._redPotion = this._spawn("potionRed").concat(expire);
     }
     /* Spawn leck */
-    if (! this._egg && Math.random() < 0.003 && ! this._leck) {
+    if (! this._egg && Math.random() < 0.001 && ! this._leck) {
       if (this._delayLeck == null || this._delayLeck < now) {
         this._delayLeck = null;
         this._leck = this._spawn("leck");
@@ -617,22 +617,22 @@ Game.prototype = {
         this._markDirty(head, true);
         this._gem = null;
         this._grow -= 5;
-        this._score(10);
+        this._score(20);
       } else if (this._greenPotion && poseq(this._greenPotion, head)) {
         this._markDirty(head, true);
         this._greenPotion = null;
         this._torusEnd = now + 10000;
-        this._score(25);
+        this._score(5);
       } else if (this._yellowPotion && poseq(this._yellowPotion, head)) {
         this._markDirty(head, true);
         this._yellowPotion = null;
         this._obstacleEnd = now + 10000;
-        this._score(25);
+        this._score(5);
         this._strengthenObstacles(false);
       } else if (this._redPotion && poseq(this._redPotion, head)) {
         this._markDirty(head, true);
         this._redPotion = null;
-        this._score((this._snake.length + this._grow) * 2);
+        this._score(this._snake.length + this._grow);
         this._grow = 5 - this._snake.length;
       } else if (this._leck && poseq(this._leck, head)) {
         if (! this._disappearing) {
