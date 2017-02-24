@@ -583,7 +583,12 @@ Game.prototype = {
           this._markDirty(this._egg, false, "egg");
         for (var i = 1; i < this._snake.length; i++) {
           if (poseq(this._snake[i], this._snake[0])) {
-            return this.die("crashed into self");
+            if (i == this._snake.length - 1 &&
+                this._snake[i][2] == this._snake[0][2]) {
+              return this.die("bit own tail");
+            } else {
+              return this.die("crashed into self");
+            }
           }
           if (this._nextDir) {
             this._direction = this._nextDir;
