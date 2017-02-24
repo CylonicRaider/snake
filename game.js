@@ -590,10 +590,6 @@ Game.prototype = {
               return this.die("crashed into self");
             }
           }
-          if (this._nextDir) {
-            this._direction = this._nextDir;
-            this._nextDir = null;
-          }
         }
         if (newX < 0 || newX >= this.size[0] || newY < 0 ||
             newY >= this.size[1])
@@ -647,6 +643,11 @@ Game.prototype = {
         this._markDirty(head, true, this._snakeSprite(0));
         this._markDirty(this._leck, false, "leck");
       }
+    }
+    /* Flush rotation buffer */
+    if (this._nextDir) {
+      this._direction = this._nextDir;
+      this._nextDir = null;
     }
   },
 
