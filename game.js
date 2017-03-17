@@ -646,7 +646,9 @@ Game.prototype = {
     }
     /* Flush rotation buffer */
     if (this._nextDir) {
-      this._direction = this._nextDir;
+      if (this._snake._length == 0 ||
+          this._nextDir != TURNDIR[this._snake[0][2]])
+        this._direction = this._nextDir;
       this._nextDir = null;
     }
   },
@@ -671,7 +673,6 @@ Game.prototype = {
       return;
     } else if (! this._snake.length) {
       this._direction = dir;
-      return;
     } else if (this._direction != this._snake[0][2] &&
         dir != TURNDIR[this._direction]) {
       this._nextDir = dir;
