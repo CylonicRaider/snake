@@ -92,7 +92,7 @@ function init() {
           case "dead": showNode("overscreen", "restart"); break;
         }
       } else if (event.type == "score") {
-        //$id("score").textContent = event.value;
+        // Score animated below.
         $id("highscore").textContent = highscore(event.value);
       }
     };
