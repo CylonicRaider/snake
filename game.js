@@ -481,43 +481,43 @@ Game.prototype = {
       this._markDirty(this._egg, true, "egg");
       this._markDirty(this._egg, false, "arrow" + this._direction);
     }
-    if (! this._leck) {
-      /* Despawn potions */
-      if (this._greenPotion && this._greenPotion[2] < now) {
-        this._markDirty(this._greenPotion, true);
-        this._greenPotion = null;
-      }
-      if (this._yellowPotion && this._yellowPotion[2] < now) {
-        this._markDirty(this._yellowPotion, true);
-        this._yellowPotion = null;
-      }
-      if (this._redPotion && this._redPotion[2] < now) {
-        this._markDirty(this._redPotion, true);
-        this._redPotion = null;
-      }
-      /* Spawn/move mouse. */
-      if (Math.random() < 0.2) {
-        if (! this._mouse) {
-          this._mouse = this._spawn("mouse");
-        } else {
-          var newMouse = [this._mouse[0], this._mouse[1]];
-          switch (rndChoice("URDL")) {
-            case "U": newMouse[1]--; break;
-            case "R": newMouse[0]++; break;
-            case "D": newMouse[1]++; break;
-            case "L": newMouse[0]--; break;
-          }
-          if (newMouse[0] < 0 || newMouse[0] >= this.size[0] ||
-              newMouse[1] < 0 || newMouse[1] >= this.size[1]) {
-            this._markDirty(this._mouse, true);
-            this._mouse = null;
-          } else if (this._freeSpot(newMouse)) {
-            this._markDirty(this._mouse, true);
-            this._mouse = newMouse;
-            this._markDirty(this._mouse, false, "mouse");
-          }
+    /* Despawn potions */
+    if (this._greenPotion && this._greenPotion[2] < now) {
+      this._markDirty(this._greenPotion, true);
+      this._greenPotion = null;
+    }
+    if (this._yellowPotion && this._yellowPotion[2] < now) {
+      this._markDirty(this._yellowPotion, true);
+      this._yellowPotion = null;
+    }
+    if (this._redPotion && this._redPotion[2] < now) {
+      this._markDirty(this._redPotion, true);
+      this._redPotion = null;
+    }
+    /* Spawn/move mouse. */
+    if (Math.random() < 0.2) {
+      if (this._mouse) {
+        var newMouse = [this._mouse[0], this._mouse[1]];
+        switch (rndChoice("URDL")) {
+          case "U": newMouse[1]--; break;
+          case "R": newMouse[0]++; break;
+          case "D": newMouse[1]++; break;
+          case "L": newMouse[0]--; break;
         }
+        if (newMouse[0] < 0 || newMouse[0] >= this.size[0] ||
+            newMouse[1] < 0 || newMouse[1] >= this.size[1]) {
+          this._markDirty(this._mouse, true);
+          this._mouse = null;
+        } else if (this._freeSpot(newMouse)) {
+          this._markDirty(this._mouse, true);
+          this._mouse = newMouse;
+          this._markDirty(this._mouse, false, "mouse");
+        }
+      } else if (! this._leck) {
+        this._mouse = this._spawn("mouse");
       }
+    }
+    if (! this._leck) {
       /* Spawn gem and potions. */
       var expire = [now + 10000];
       if (Math.random() < 0.01 && ! this._gem)
@@ -528,11 +528,9 @@ Game.prototype = {
         this._yellowPotion = this._spawn("potionYellow").concat(expire);
       if (Math.random() < 0.005 && ! this._redPotion)
         this._redPotion = this._spawn("potionRed").concat(expire);
-    }
-    /* Spawn leck */
-    if (! this._egg && ! this._leck && this._mice >= 20 &&
-        Math.random() < 0.05) {
-      if (this._delayLeck == null || this._delayLeck < now) {
+      /* Spawn leck */
+      if (! this._egg && this._mice >= 20 && Math.random() < 0.05 &&
+          (this._delayLeck == null || this._delayLeck < now)) {
         this._delayLeck = null;
         this._leck = this._spawn("leck");
       }
