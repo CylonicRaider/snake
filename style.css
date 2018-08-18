@@ -74,6 +74,12 @@ h1 + p, h2 + p, h3 + p {
   font-style: italic;
 }
 
+#icon {
+  background: -3em -3em / 4em 4em url(sprites.svg);
+  width: 1em;
+  height: 1em;
+}
+
 #assets {
   display: none;
 }
@@ -90,7 +96,7 @@ h1 + p, h2 + p, h3 + p {
   white-space: pre;
 }
 #game-header .strut {
-  width: 1em;
+  width: 0.75em;
 }
 #game-header .filler {
   -webkit-flex-grow: 1;
