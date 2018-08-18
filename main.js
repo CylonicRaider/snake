@@ -66,38 +66,36 @@ function init() {
       return;
     game.turnSnakeTo(cx, cy);
   }
-  var game = null;
+  var game = new Game($id("game"), DEFAULT_SIZE);
+  game.onevent = function(event) {
+    if (event.type == "status") {
+      if (event.status == "banner") {
+        $id("level").textContent = event.level;
+        $id("level-big").textContent = event.level;
+      } else if (event.status == "dead") {
+        var explanation = "\u201c" + event.reason + "\u201d";
+        $id("death-reason").textContent = explanation;
+        $id("death-level").textContent = game.level;
+        $id("death-score").textContent = game.score + " / " + highscore();
+        if (window.onSnakeEvent)
+          window.onSnakeEvent({type: "gameover", game: game,
+            score: game.score, level: game.level,
+            reason: event.reason, highscore: HIGHSCORE});
+      }
+      switch (event.status) {
+        case "banner": showNode("levelscreen"); break;
+        case "running": showNode("gamescreen", "game"); break;
+        case "paused": showNode("pausescreen", "resume"); break;
+        case "dead": showNode("overscreen", "restart"); break;
+      }
+    } else if (event.type == "score") {
+      // Score animated below.
+      $id("highscore").textContent = highscore(event.value);
+    }
+  };
   $listen("start", "click", function() {
     SPRITESHEET.compose(CELLSIZE * 8);
-    game = new Game($id("game"), DEFAULT_SIZE);
-    game.onevent = function(event) {
-      if (event.type == "status") {
-        if (event.status == "banner") {
-          $id("level").textContent = event.level;
-          $id("level-big").textContent = event.level;
-        } else if (event.status == "dead") {
-          var explanation = "\u201c" + event.reason + "\u201d";
-          $id("death-reason").textContent = explanation;
-          $id("death-level").textContent = game.level;
-          $id("death-score").textContent = game.score + " / " + highscore();
-          if (window.onSnakeEvent)
-            window.onSnakeEvent({type: "gameover", game: game,
-              score: game.score, level: game.level,
-              reason: event.reason, highscore: HIGHSCORE});
-        }
-        switch (event.status) {
-          case "banner": showNode("levelscreen"); break;
-          case "running": showNode("gamescreen", "game"); break;
-          case "paused": showNode("pausescreen", "resume"); break;
-          case "dead": showNode("overscreen", "restart"); break;
-        }
-      } else if (event.type == "score") {
-        // Score animated below.
-        $id("highscore").textContent = highscore(event.value);
-      }
-    };
     showNode("gamescreen", "game");
-    game.init();
     game.loadLevel(1);
     game.main();
   });
@@ -145,13 +143,29 @@ function init() {
     }
     $id("score").textContent = score;
   }, 30);
+  game.init();
   showNode("titlescreen");
   if (! document.activeElement || document.activeElement == document.body)
     $id("start").focus();
 }
 
+function showExtra(text, callback) {
+  $id("extra-wrapper").classList.remove("hidden");
+  var extraButton = $id("extra");
+  extraButton.textContent = text;
+  $listen(extraButton, "click", callback);
+  return extraButton;
+}
+
 function windowSize() {
-  return [DEFAULT_SIZE[0] * CELLSIZE + 6, DEFAULT_SIZE[1] * CELLSIZE + 30];
+  var gameScreen = $id("gamescreen");
+  var gameWrapper = $id("game-wrapper");
+  gameScreen.style.display = "block";
+  gameWrapper.style.position = "fixed";
+  var rect = gameWrapper.getBoundingClientRect();
+  gameWrapper.style.position = "";
+  gameScreen.style.display = "";
+  return [rect.width, rect.height];
 }
 
 $listen(window, "load", function() {

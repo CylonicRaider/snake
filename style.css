@@ -78,9 +78,11 @@ h1 + p, h2 + p, h3 + p {
   display: none;
 }
 
-#game-header {
+#game-header, #extra-wrapper {
   display: -webkit-flex;
   display: flex;
+  -webkit-align-items: center;
+  align-items: center;
   font-size: 24px;
   margin: -1px 0 1px;
 }
@@ -93,6 +95,14 @@ h1 + p, h2 + p, h3 + p {
 #game-header .filler {
   -webkit-flex-grow: 1;
   flex-grow: 1;
+}
+
+#extra-wrapper.hidden {
+  display: none;
+}
+#extra-wrapper button {
+  margin: 0;
+  z-index: 100;
 }
 
 #game-wrapper {

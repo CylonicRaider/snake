@@ -20,7 +20,7 @@ body { opacity: 0; }
 </div>
 <div id="titlescreen" class="pane">
   <h1>Snake game</h1>
-  <p>Made by @CylonicRaider</p>
+  <p>Made by <span class="author">@CylonicRaider</span></p>
   <button id="start">Start</button>
 </div>
 <div id="gamescreen" class="pane">
@@ -32,6 +32,10 @@ body { opacity: 0; }
       <b>Level: </b><span id="level">N/A</span>
       <span class="filler"></span>
       <b>Best: </b><span id="highscore">N/A</span>
+      <span id="extra-wrapper" class="hidden">
+        <span class="strut"></span>
+        <button id="extra"></button>
+      </span>
     </div>
     <canvas id="game" width="0" height="0" tabindex="0"></canvas>
   </div>
