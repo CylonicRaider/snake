@@ -241,6 +241,7 @@ Game.prototype = {
     if (full) {
       this.level = null;
       this.score = null;
+      this.totalMice = 0;
     }
     this.status = "idle";
     this._showLevel = null;
@@ -253,6 +254,7 @@ Game.prototype = {
     this._nextDir = null;
     this._snake = [];
     this._grow = 0;
+    this._mice = 0;
     this._disappearing = false;
     this._obstacles = [];
     this._obstaclesStrong = true;
@@ -424,7 +426,8 @@ Game.prototype = {
       this.score += incr;
     }
     if (this.onevent)
-      this.onevent({type: "score", old: old, value: this.score});
+      this.onevent({type: "score", old: old, value: this.score,
+        mice: this.totalMice});
   },
 
   /* Update CSS classes of canvas */
@@ -527,7 +530,8 @@ Game.prototype = {
         this._redPotion = this._spawn("potionRed").concat(expire);
     }
     /* Spawn leck */
-    if (! this._egg && Math.random() < 0.003 && ! this._leck) {
+    if (! this._egg && ! this._leck && this._mice >= 20 &&
+        Math.random() < 0.05) {
       if (this._delayLeck == null || this._delayLeck < now) {
         this._delayLeck = null;
         this._leck = this._spawn("leck");
@@ -611,8 +615,10 @@ Game.prototype = {
       }
       if (this._mouse && poseq(this._mouse, head)) {
         this._markDirty(head, true);
+        this.totalMice++;
         this._mouse = null;
         this._grow += 5;
+        this._mice++;
         this._score(5);
       } else if (this._gem && poseq(this._gem, head)) {
         this._markDirty(head, true);

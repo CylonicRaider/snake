@@ -76,10 +76,11 @@ function init() {
         var explanation = "\u201c" + event.reason + "\u201d";
         $id("death-reason").textContent = explanation;
         $id("death-level").textContent = game.level;
+        $id("death-mice").textContent = game.totalMice;
         $id("death-score").textContent = game.score + " / " + highscore();
         if (window.onSnakeEvent)
           window.onSnakeEvent({type: "gameover", game: game,
-            score: game.score, level: game.level,
+            score: game.score, level: game.level, mice: game.totalMice,
             reason: event.reason, highscore: HIGHSCORE});
       }
       switch (event.status) {
