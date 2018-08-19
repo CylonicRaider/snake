@@ -150,6 +150,12 @@ function init() {
     $id("start").focus();
 }
 
+function linkIcon(url) {
+  var icon = $id("icon");
+  icon.href = url;
+  return icon;
+}
+
 function showExtra(text, callback) {
   $id("extra-wrapper").classList.remove("hidden");
   var extraButton = $id("extra");
