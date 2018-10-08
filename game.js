@@ -238,11 +238,6 @@ Game.prototype = {
 
   /* Reset the game's attributes */
   reset: function(full) {
-    if (full) {
-      this.level = null;
-      this.score = null;
-      this.totalMice = 0;
-    }
     this.status = "idle";
     this._showLevel = null;
     this._delayHatch = null;
@@ -264,6 +259,11 @@ Game.prototype = {
     this._yellowPotion = null;
     this._redPotion = null;
     this._leck = null;
+    if (full) {
+      this.level = null;
+      this.totalMice = 0;
+      this._score(0, true);
+    }
   },
 
   /* Load the level with given number */

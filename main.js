@@ -97,6 +97,7 @@ function init() {
   $listen("start", "click", function() {
     SPRITESHEET.compose(CELLSIZE * 8);
     showNode("gamescreen", "game");
+    // Game is already initialized below.
     game.loadLevel(1);
     game.main();
   });
@@ -124,7 +125,7 @@ function init() {
   });
   $listen("restart", "click", function(event) {
     if (game && game.status == "dead") {
-      game.init();
+      game.reset(true);
       game.loadLevel(1);
       game.main();
     }
