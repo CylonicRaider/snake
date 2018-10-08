@@ -78,6 +78,7 @@ h1 + p, h2 + p, h3 + p {
   background: -3em -3em / 4em 4em url(sprites.svg);
   width: 1em;
   height: 1em;
+  z-index: 100;
 }
 
 #assets {
