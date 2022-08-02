@@ -105,11 +105,17 @@ function init() {
     if (! game) return;
     switch (event.keyCode) {
       case 19: game.pause();            break; // Pause
+      case 80: game.pause();            break; // P
       case 27: game.die("player quit"); break; // Escape
+      case 81: game.die("player quit"); break; // Q
       case 38: game.turnSnake("U");     break; // Up
-      case 39: game.turnSnake("R");     break; // Right
-      case 40: game.turnSnake("D");     break; // Down
+      case 87: game.turnSnake("U");     break; // W
       case 37: game.turnSnake("L");     break; // Left
+      case 65: game.turnSnake("L");     break; // A
+      case 40: game.turnSnake("D");     break; // Down
+      case 83: game.turnSnake("D");     break; // S
+      case 39: game.turnSnake("R");     break; // Right
+      case 68: game.turnSnake("R");     break; // D
     }
   });
   $listen("game", "mousedown", directSnake);
